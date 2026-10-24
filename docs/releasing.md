@@ -23,6 +23,17 @@ craftrules `release/cut-a-release.md`.
 | WiX UpgradeCode | `7F8B9827-D065-41B7-A514-2A454B21F484` (fixed forever; never reuse it in another app) |
 | Linux categories | `Graphics;2DGraphics;VectorGraphics;X-Design;` (`Design` isn't a registered freedesktop category, so `desktop-file-validate` rejects it) |
 
+## Building installers without the shared release workflow
+
+`.github/workflows/build-installers.yml` builds every platform's installers on GitHub-hosted
+machines and depends on nothing outside this repository: Linux (AppImage, deb, rpm, tar.gz) and the
+collaboration server, Windows (msi and portable zip), macOS (universal dmg), the web zip, and a
+best-effort FreeBSD tarball. Run it from the Actions tab (**Run workflow**) or push a `v*` tag; the
+installers are uploaded as run artifacts, and "draft-release" (or a tag) also creates a draft GitHub
+Release. It uses no secrets, so Windows builds are unsigned and macOS builds are ad-hoc signed and not
+notarized: Windows SmartScreen and macOS Gatekeeper will warn on first open. Signed releases still
+go through `release.yml` (below), which needs the signing secrets.
+
 ## Cutting a release
 
 1. **Bump the version** on `main`. It lives only in `[workspace.package] version` in the root

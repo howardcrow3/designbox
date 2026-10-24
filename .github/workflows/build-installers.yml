@@ -1,0 +1,244 @@
+# Builds DesignBox installers for every platform on GitHub-hosted machines, with no dependency on
+# another repository's reusable workflows and no secrets:
+#
+#   Linux    .AppImage, .deb, .rpm, .tar.gz  + the collaboration server tarball
+#   Windows  .msi installer + portable .zip  (unsigned)
+#   macOS    universal .dmg + CLI .zip       (ad-hoc signed, not notarized)
+#   Web      static-site .zip
+#   FreeBSD  .tar.gz                         (best effort; never fails the run)
+#
+# Run it from the Actions tab (Run workflow), or push a tag like v0.10.0. The installers are
+# uploaded as run artifacts; tick "draft-release" (or push a tag) to also attach them to a draft
+# GitHub Release. Signing and notarization need certificates this workflow doesn't have, so
+# macOS Gatekeeper and Windows SmartScreen will warn on first open.
+name: Build installers
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version override, e.g. 0.10.1-rc.1 (empty: the version in Cargo.toml)"
+        type: string
+        default: ""
+      skip-fonts:
+        description: "Skip the craft-fonts build input (the web build can't draw text without it)"
+        type: boolean
+        default: false
+      draft-release:
+        description: "Also create a draft GitHub Release from the installers"
+        type: boolean
+        default: false
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-installers-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  DESIGNBOX_VERSION: ${{ inputs.version }}
+  # The craft-fonts commit the upstream release builds with (Inter and the other embedded fonts).
+  CRAFT_FONTS_REF: 43913056ce82a3fdad0ef69f6b88d1dc922a8104
+
+jobs:
+  linux:
+    name: Linux (AppImage, deb, rpm, tar.gz, server)
+    # Ubuntu 22.04 (glibc 2.35) so the binaries also run on newer distributions.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch craft-fonts
+        if: ${{ !inputs.skip-fonts }}
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/craft-fonts
+          ref: ${{ env.CRAFT_FONTS_REF }}
+          path: craft-fonts
+      - name: Point the build at craft-fonts
+        if: ${{ hashFiles('craft-fonts/fonts/manifest.txt') != '' }}
+        shell: bash
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: System libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev \
+            libgl1-mesa-dev libgtk-3-dev
+      - name: Install nfpm (deb and rpm)
+        run: |
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Package the app (AppImage, deb, rpm, tar.gz)
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+        run: packaging/linux/package.sh
+      - name: Package the collaboration server
+        run: packaging/server/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-linux
+          path: dist/release/*
+          if-no-files-found: error
+
+  windows:
+    name: Windows (msi, portable zip)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch craft-fonts
+        if: ${{ !inputs.skip-fonts }}
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/craft-fonts
+          ref: ${{ env.CRAFT_FONTS_REF }}
+          path: craft-fonts
+      - name: Point the build at craft-fonts
+        if: ${{ hashFiles('craft-fonts/fonts/manifest.txt') != '' }}
+        shell: bash
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install WiX v5
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2
+          wix extension add -g WixToolset.Util.wixext/5.0.2
+      - name: Package (unsigned)
+        shell: pwsh
+        run: pwsh packaging/windows/package.ps1 -Arch x64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-windows
+          path: dist/release/*
+          if-no-files-found: error
+
+  macos:
+    name: macOS (universal dmg)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch craft-fonts
+        if: ${{ !inputs.skip-fonts }}
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/craft-fonts
+          ref: ${{ env.CRAFT_FONTS_REF }}
+          path: craft-fonts
+      - name: Point the build at craft-fonts
+        if: ${{ hashFiles('craft-fonts/fonts/manifest.txt') != '' }}
+        shell: bash
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+      - name: Package (ad-hoc signed, not notarized)
+        run: packaging/macos/package.sh --arch universal
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-macos
+          path: dist/release/*
+          if-no-files-found: error
+
+  web:
+    name: Web (static site zip)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      # The browser has no system fonts: without craft-fonts the web build can't draw text.
+      - name: Fetch craft-fonts
+        if: ${{ !inputs.skip-fonts }}
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/craft-fonts
+          ref: ${{ env.CRAFT_FONTS_REF }}
+          path: craft-fonts
+      - name: Point the build at craft-fonts
+        if: ${{ !inputs.skip-fonts }}
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: trunk
+      - name: Package
+        run: packaging/web/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-web
+          path: dist/release/*
+          if-no-files-found: error
+
+  freebsd:
+    name: FreeBSD (tar.gz, best effort)
+    runs-on: ubuntu-latest
+    # No GitHub-hosted FreeBSD runners exist: this builds inside a FreeBSD VM. The package list is a
+    # best guess, so a failure here is reported but never fails the run or blocks the release.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch craft-fonts
+        if: ${{ !inputs.skip-fonts }}
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/craft-fonts
+          ref: ${{ env.CRAFT_FONTS_REF }}
+          path: craft-fonts
+      - name: Build in a FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "14.2"
+          usesh: true
+          copyback: true
+          envs: "DESIGNBOX_VERSION"
+          prepare: |
+            pkg install -y bash curl git pkgconf libxkbcommon wayland libX11 libxcb libXcursor libXi \
+              vulkan-loader mesa-libs ca_root_nss
+            curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+          run: |
+            . "$HOME/.cargo/env"
+            if [ -f craft-fonts/fonts/manifest.txt ]; then export CRAFT_FONTS_DIR="$PWD/craft-fonts"; fi
+            bash packaging/freebsd/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-freebsd
+          path: dist/release/*
+          if-no-files-found: error
+
+  release:
+    name: Draft release
+    needs: [linux, windows, macos, web, freebsd]
+    # always(): the best-effort FreeBSD job may have failed; everything else must have passed.
+    if: ${{ always() && needs.linux.result == 'success' && needs.windows.result == 'success' && needs.macos.result == 'success' && needs.web.result == 'success' && (startsWith(github.ref, 'refs/tags/v') || inputs.draft-release) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: installers-*
+          path: out
+          merge-multiple: true
+      - name: Checksums
+        run: cd out && sha256sum * > SHA256SUMS
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${DESIGNBOX_VERSION:-$(awk '/^\[workspace.package\]/{p=1;next} /^\[/{p=0} p&&$1=="version"{gsub(/"/,"",$3);print $3;exit}' Cargo.toml)}"
+          gh release create "v$VERSION" out/* --draft --title "DesignBox v$VERSION" \
+            --notes "Unsigned builds: macOS Gatekeeper and Windows SmartScreen will warn on first open." \
+            --target "$GITHUB_SHA"
