@@ -1,7 +1,7 @@
 name: CI
 
 # Quality gates for every push to main and every pull request (`cargo xtask ci`), through the
-# suite's shared gate workflow in craft-common-actions.
+# suite's shared gate workflow in box-common.
 on:
   push:
     branches: [main]
@@ -19,7 +19,7 @@ concurrency:
 jobs:
   gate:
     # Tracks @main so suite-wide CI fixes reach every app without a PR in each repository.
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: howardcrow3/box-common/.github/workflows/gate.yml@main
     with:
       # The craft-fonts commit release.yml builds with. Needs fonts/latin-manifest.txt (Inter):
       # crates/text/build.rs fails a build that requires craft-fonts without it. Only craft-fonts'

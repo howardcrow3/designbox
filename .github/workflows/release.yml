@@ -20,7 +20,7 @@ concurrency:
 jobs:
   release:
     # Intentionally tracked at @main (not SHA-pinned) so org-wide CI improvements, security fixes, and build optimizations propagate without PR churn across all craftapp repos.
-    uses: storytold/craft-common-actions/.github/workflows/release.yml@main
+    uses: howardcrow3/box-common/.github/workflows/release.yml@main
     with:
       app-name: designbox
       app-title: DesignBox
