@@ -9,8 +9,8 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use figcraft_color::{ColorProfile, ImageFilters, PaintKind};
-use figcraft_doc::{Document, ImageData, NodeId};
+use designbox_color::{ColorProfile, ImageFilters, PaintKind};
+use designbox_doc::{Document, ImageData, NodeId};
 use tiny_skia::Pixmap;
 
 pub(crate) type Key = (String, [i32; 7], ColorProfile);

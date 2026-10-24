@@ -4,7 +4,7 @@
 
 use std::io::Write;
 
-use figcraft_doc::Document;
+use designbox_doc::Document;
 
 use super::*;
 

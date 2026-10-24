@@ -2,7 +2,7 @@
 
 > **Last reviewed:** 2026-10-24 · **Last updated:** 2026-10-24 · **Change:** major (created: board files, the first slice of the whiteboard workflow) · **Target:** the incumbent's whiteboard product (behaviour from its public help centre)
 
-**Breadth ~35%, ready ~20% (estimated, erring low).** A board is a FigCraft file of its own kind
+**Breadth ~35%, ready ~20% (estimated, erring low).** A board is a DesignBox file of its own kind
 (`file.newBoard`) with sticky notes, shapes with text, connectors that follow what they join,
 marker, highlighter and eraser, stamps, text and sections, edited together in the existing live
 sessions. The facilitation tools (timer, voting, widgets), templates, tables, mind maps and the
@@ -12,9 +12,9 @@ design product). The work item is gap 24 in [`gaps.md`](gaps.md).
 
 ## How boards are built
 
-Board objects are ordinary layers with a small `board` field on the node (`figcraft_doc::BoardItem`),
+Board objects are ordinary layers with a small `board` field on the node (`designbox_doc::BoardItem`),
 so rendering, hit testing, undo, saving, SVG/PNG/PDF export, copy and paste and live sessions work
-on them unchanged. The file kind (`Document.kind`) is saved in `.figcraft` and reaches people who
+on them unchanged. The file kind (`Document.kind`) is saved in `.designbox` and reaches people who
 join a live session in their snapshot. What follows from the metadata (a sticky's text size, a
 shape's text room, connector routes and their labels) is recomputed in the engine's normalize pass,
 deterministically from the document, so local edits, undo and edits from others in a live session

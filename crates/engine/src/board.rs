@@ -6,13 +6,13 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_color::{BlendMode, Color, Paint};
-use figcraft_doc::{
+use designbox_color::{BlendMode, Color, Paint};
+use designbox_doc::{
     AutoLayout, BOARD_COLORS, BoardItem, BoardShape, Connector, Constraints, CrossAlign, DocError, Document, Effect, EffectKind, End, FileKind,
     HConstraint, LayoutMode, MainAlign, Node, NodeId, NodeKind, Routing, STAMP_SIZE, Shadow, Side, Sizing, Stamp, StrokeAlign, StrokeCap, StrokeJoin,
     TextAlignH, TextAutoResize, TextData, VConstraint, VectorNetwork, board_color,
 };
-use figcraft_geom::{Affine, Point, Rect};
+use designbox_geom::{Affine, Point, Rect};
 use serde_json::{Value, json};
 
 use crate::cmd::CommandSpec;
@@ -292,7 +292,7 @@ fn add_text(doc: &mut Document, parent: NodeId, text: &str, size: f64, color: Co
         n.child_layout.sizing_h = Sizing::Fill;
     })?;
     if let Some(n) = doc.node(id)
-        && let Some((w, h)) = figcraft_text::auto_size(n)
+        && let Some((w, h)) = designbox_text::auto_size(n)
         && let Some(n) = doc.node_mut(id)
     {
         (n.width, n.height) = (w, h);
@@ -498,7 +498,7 @@ fn stamp_cmd(s: &mut Session, p: &Value) -> Result<Value> {
         n.board = Some(BoardItem::Stamp { stamp, author });
     })?;
     for part in stamp.mark() {
-        let path = figcraft_geom::BezPath::from_svg(part.d).map_err(|e| EngineError::Other(format!("stamp mark: {e}")))?;
+        let path = designbox_geom::BezPath::from_svg(part.d).map_err(|e| EngineError::Other(format!("stamp mark: {e}")))?;
         add(doc, id, NodeKind::Vector { network: VectorNetwork::from_path(&path) }, "Mark", (0.0, 0.0), (STAMP_SIZE, STAMP_SIZE), |n| {
             if part.filled {
                 n.fills = vec![Paint::solid(Color::WHITE)];
@@ -974,7 +974,7 @@ fn carry_free_ends(doc: &Document, before: &Document, touched: &BTreeSet<NodeId>
     if !touched.contains(&id) || b.transform == n.transform || b.board != n.board {
         return false;
     }
-    let Some(expected) = route(doc, c).and_then(|pts| figcraft_geom::points_bounds(pts.iter().copied())).map(|b| b.origin()) else { return false };
+    let Some(expected) = route(doc, c).and_then(|pts| designbox_geom::points_bounds(pts.iter().copied())).map(|b| b.origin()) else { return false };
     let d = (doc.world_transform(id) * Point::ZERO) - expected;
     if d.hypot() <= 1e-9 {
         return false;
@@ -1038,7 +1038,7 @@ fn place_route(doc: &mut Document, id: NodeId, pts: &[Point]) {
     let pw = n.parent.map_or(Affine::IDENTITY, |p| doc.world_transform(p));
     let inv = pw.inverse();
     let local: Vec<Point> = pts.iter().map(|p| inv * *p).collect();
-    let Some(b) = figcraft_geom::points_bounds(local.iter().copied()) else { return };
+    let Some(b) = designbox_geom::points_bounds(local.iter().copied()) else { return };
     if !(b.x0.is_finite() && b.y0.is_finite() && b.x1.is_finite() && b.y1.is_finite()) {
         return;
     }
@@ -1195,7 +1195,7 @@ impl Session {
         let hit = (|| {
             let doc = self.doc().ok()?;
             let leaf = self.hit(doc, self.page().ok()?, ev.p(), 2.0 / ev.zoom.max(1e-6))?;
-            let t = figcraft_doc::geometry::select_target(doc, leaf, &[], false);
+            let t = designbox_doc::geometry::select_target(doc, leaf, &[], false);
             let n = doc.node(t)?;
             (!matches!(n.board, Some(BoardItem::Connector(_)) | Some(BoardItem::Label { .. }) | Some(BoardItem::Ink))).then_some(t)
         })();
@@ -1284,7 +1284,7 @@ impl Session {
     /// A double-click with the Move tool on a board object: type in its text (a connector gets a
     /// label to type in). True when it was one.
     pub(crate) fn board_double_click(&mut self, doc: &Document, leaf: NodeId, sel: &[NodeId]) -> Result<bool> {
-        let whole = figcraft_doc::geometry::select_target(doc, leaf, sel, false);
+        let whole = designbox_doc::geometry::select_target(doc, leaf, sel, false);
         let editing = self.ds()?.text_edit.as_ref().is_some_and(|te| owner_of_text(doc, te.id) == Some(whole));
         let Some(item) = doc.node(whole).and_then(|n| n.board.clone()).filter(|_| !editing) else { return Ok(false) };
         self.tool.gesture = Gesture::None;

@@ -3,34 +3,34 @@ resolver = "3"
 members = ["crates/*", "apps/*", "xtask"]
 # The plugin SDK and examples build for wasm32 in a workspace of their own (`cargo xtask plugins`).
 exclude = ["plugins"]
-# default-members = ["crates/*", "apps/figcraft", "apps/figcraft-cli", "xtask"]
+# default-members = ["crates/*", "apps/designbox", "apps/designbox-cli", "xtask"]
 
 [workspace.package]
 version = "0.10.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
-repository = "https://github.com/storytold/figcraft"
+repository = "https://github.com/howardcrow3/designbox"
 
 [workspace.dependencies]
 # internal
-figcraft-geom = { path = "crates/geom" }
-figcraft-color = { path = "crates/color" }
-figcraft-doc = { path = "crates/doc" }
-figcraft-layout = { path = "crates/layout" }
-figcraft-text = { path = "crates/text" }
-figcraft-pathops = { path = "crates/pathops" }
-figcraft-render = { path = "crates/render" }
-figcraft-svg = { path = "crates/svg" }
-figcraft-pdf = { path = "crates/pdf" }
-figcraft-format = { path = "crates/format" }
-figcraft-tools = { path = "crates/tools" }
-figcraft-collab = { path = "crates/collab" }
-figcraft-engine = { path = "crates/engine" }
-figcraft-ui-egui = { path = "crates/ui-egui" }
-figcraft-mcp = { path = "crates/mcp" }
-figcraft-collab-net = { path = "crates/collab-net" }
-figcraft-plugin = { path = "crates/plugin" }
+designbox-geom = { path = "crates/geom" }
+designbox-color = { path = "crates/color" }
+designbox-doc = { path = "crates/doc" }
+designbox-layout = { path = "crates/layout" }
+designbox-text = { path = "crates/text" }
+designbox-pathops = { path = "crates/pathops" }
+designbox-render = { path = "crates/render" }
+designbox-svg = { path = "crates/svg" }
+designbox-pdf = { path = "crates/pdf" }
+designbox-format = { path = "crates/format" }
+designbox-tools = { path = "crates/tools" }
+designbox-collab = { path = "crates/collab" }
+designbox-engine = { path = "crates/engine" }
+designbox-ui-egui = { path = "crates/ui-egui" }
+designbox-mcp = { path = "crates/mcp" }
+designbox-collab-net = { path = "crates/collab-net" }
+designbox-plugin = { path = "crates/plugin" }
 
 # Which paths stored in a document may be followed (craft-libs).
 craft-docpath = { version = "0.1.0", git = "https://github.com/storytold/craft-libs", rev = "82a24b006eefa036b43c09a67fb9a3fbd17ffe63" }
@@ -94,7 +94,7 @@ dbg_macro = "warn"
 # Style lints from newer toolchains that fight index-heavy pixel code.
 needless_range_loop = "allow"
 chunks_exact_to_as_chunks = "allow"
-# FigCraft never crashes: shipped code returns `Result`/`Option` instead of panicking (see
+# DesignBox never crashes: shipped code returns `Result`/`Option` instead of panicking (see
 # AGENTS.md › Never crash). Tests may unwrap (clippy.toml).
 unwrap_used = "deny"
 expect_used = "deny"
@@ -117,7 +117,7 @@ debug = false
 lto = "thin"
 codegen-units = 4
 
-# The browser build only (apps/figcraft-web/index.html: data-cargo-profile). Optimised for size:
+# The browser build only (apps/designbox-web/index.html: data-cargo-profile). Optimised for size:
 # packaging/web/package.sh fails a .wasm over 24 MiB (Cloudflare's per-file cap is 25 MiB).
 # wasm32-unknown-unknown always aborts on panic, so panic = "abort" changes nothing there.
 [profile.web-release]

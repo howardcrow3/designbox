@@ -18,13 +18,13 @@ use std::collections::BTreeMap;
 use std::io::Write;
 use std::sync::Arc;
 
-use figcraft_doc::color::{BlendMode, Color, GradientKind, ImageScaleMode, Paint, PaintKind};
-use figcraft_doc::geom::kurbo::PathEl;
-use figcraft_doc::geom::{Affine, BezPath};
-use figcraft_doc::proto::{
+use designbox_doc::color::{BlendMode, Color, GradientKind, ImageScaleMode, Paint, PaintKind};
+use designbox_doc::geom::kurbo::PathEl;
+use designbox_doc::geom::{Affine, BezPath};
+use designbox_doc::proto::{
     Action, Direction, Easing, GAMEPAD_BUTTONS, Interaction, KeyMods, Overflow, OverlayPosition, ScrollPosition, Transition, Trigger,
 };
-use figcraft_doc::{
+use designbox_doc::{
     AutoLayout, BoolOp, ContentAlign, CrossAlign, Document, EffectKind, ExportSize, GridAlign, GridKind, GridTrack, HConstraint, LayoutMode,
     LetterSpacing, LineHeight, ListStyle, MainAlign, MaskType, Node, NodeId, NodeKind, NoiseMode, PropDef, Sizing, StrokeAlign, StrokeCap,
     StrokeJoin, StyleKind, TextAlignH, TextAlignV, TextAutoResize, TextCase, TextData, TextDecoration, TextStyle, VConstraint, VariableType,
@@ -404,7 +404,7 @@ fn join_name(j: StrokeJoin) -> &'static str {
 /// `3` quadratic, `4` cubic, each followed by its points as little-endian `f32` pairs.
 fn path_blob(p: &BezPath) -> Vec<u8> {
     let mut out = Vec::new();
-    let mut put = |cmd: u8, pts: &[figcraft_doc::geom::Point]| {
+    let mut put = |cmd: u8, pts: &[designbox_doc::geom::Point]| {
         out.push(cmd);
         for q in pts {
             out.extend_from_slice(&(finite(q.x) as f32).to_le_bytes());
@@ -514,7 +514,7 @@ impl<'d> Exporter<'d> {
     fn message(&mut self) -> Kv<'static> {
         let doc = self.doc;
         self.assign();
-        let profile = if doc.color_profile == figcraft_doc::color::ColorProfile::DisplayP3 { "DISPLAY_P3" } else { "SRGB" };
+        let profile = if doc.color_profile == designbox_doc::color::ColorProfile::DisplayP3 { "DISPLAY_P3" } else { "SRGB" };
         let mut root: Fields = vec![("guid", guid(0, 0)), ("phase", e("CREATED")), ("type", e("DOCUMENT")), ("name", s(&doc.name))];
         root.extend(root_fields());
         root.push(("documentColorProfile", e(profile)));
@@ -573,7 +573,7 @@ impl<'d> Exporter<'d> {
                 }
                 _ => {}
             }
-            for a in n.interactions.iter().flat_map(|it| figcraft_doc::proto::walk(&it.actions)) {
+            for a in n.interactions.iter().flat_map(|it| designbox_doc::proto::walk(&it.actions)) {
                 if let Action::OpenOverlay { dest, position, close_on_outside, background, .. } = a {
                     let o = Overlay { position: *position, close_on_outside: *close_on_outside, background: *background };
                     match self.overlays.get(dest) {
@@ -926,7 +926,7 @@ impl<'d> Exporter<'d> {
             // The format's variable width is the same on both sides of the path: a stroke wider on
             // one side is written as the area it paints, with the stroke itself kept as plugin data
             // (which the import puts back).
-            self.warn("strokes wider on one side of their path were written as filled outlines (the stroke itself is kept for FigCraft)");
+            self.warn("strokes wider on one side of their path were written as filled outlines (the stroke itself is kept for DesignBox)");
             let children = self.layer(&outline, parent, f, nested);
             f.push(("pluginData", arr(vec![o(vec![("pluginID", s(STASH.0)), ("value", s(&original)), ("key", s(STASH.1))])])));
             return children;
@@ -1011,7 +1011,7 @@ impl<'d> Exporter<'d> {
         }
         let boxy = n.kind.is_frame_like() || matches!(n.kind, NodeKind::Rectangle | NodeKind::Section { .. });
         if (boxy || matches!(n.kind, NodeKind::Ellipse { .. } | NodeKind::Polygon { .. } | NodeKind::Star { .. }))
-            && let Some(p) = figcraft_doc::geometry::shape_path(n)
+            && let Some(p) = designbox_doc::geometry::shape_path(n)
         {
             self.geometry("fillGeometry", &p, WindingRule::NonZero, f);
         }
@@ -1096,7 +1096,7 @@ impl<'d> Exporter<'d> {
         }
         self.child_layout(n, parent, f);
         if !n.exports.is_empty() {
-            if n.exports.iter().any(|x| x.format == figcraft_doc::ExportFormat::Webp) {
+            if n.exports.iter().any(|x| x.format == designbox_doc::ExportFormat::Webp) {
                 self.warn("WebP export settings were written as PNG");
             }
             f.push(("exportSettings", arr(n.exports.iter().map(export_setting).collect())));
@@ -1302,7 +1302,7 @@ impl<'d> Exporter<'d> {
         // its length, as a share of the stroke weight (half of it each for the full weight). The
         // two sides are the same: a reader draws nothing for a point with unequal sides.
         if let Some(p) = sp.profile().filter(|_| sp.weight.is_finite() && sp.weight > 0.0) {
-            let point = |q: &figcraft_doc::WidthPoint| o(vec![("position", fl(q.t)), ("ascent", fl(q.scale / 2.0)), ("descent", fl(q.scale / 2.0))]);
+            let point = |q: &designbox_doc::WidthPoint| o(vec![("position", fl(q.t)), ("ascent", fl(q.scale / 2.0)), ("descent", fl(q.scale / 2.0))]);
             let p = p.sanitized();
             if one_sided(&p) {
                 self.warn("strokes wider on one side of their path were written with that width on both sides");
@@ -1322,7 +1322,7 @@ impl<'d> Exporter<'d> {
     }
 
     /// Effect `index` of a layer, with the variables `bound` to its fields.
-    fn effect(&mut self, x: &figcraft_doc::Effect, index: usize, bound: &Bound) -> Kv<'static> {
+    fn effect(&mut self, x: &designbox_doc::Effect, index: usize, bound: &Bound) -> Kv<'static> {
         let mut f: Fields = vec![("visible", b(x.visible))];
         let vars = [
             ("color", "colorVar"),
@@ -1333,9 +1333,9 @@ impl<'d> Exporter<'d> {
             ("startRadius", "startRadiusVar"),
         ];
         f.extend(vars.into_iter().filter_map(|(ours, key)| Some((key, bound.effects.get(&(index, ours))?.clone()))));
-        let blur = |f: &mut Fields, ty: &'static str, bl: &figcraft_doc::Blur| {
+        let blur = |f: &mut Fields, ty: &'static str, bl: &designbox_doc::Blur| {
             f.extend([("type", e(ty)), ("radius", fl(bl.radius))]);
-            if bl.blur_type == figcraft_doc::BlurType::Progressive {
+            if bl.blur_type == designbox_doc::BlurType::Progressive {
                 f.extend([
                     ("blurOpType", e("PROGRESSIVE")),
                     ("startRadius", fl(bl.start_radius)),
@@ -1704,9 +1704,9 @@ impl<'d> Exporter<'d> {
                         st.push((
                             "handleMirroring",
                             e(match m {
-                                figcraft_doc::HandleMirroring::None => "NONE",
-                                figcraft_doc::HandleMirroring::Angle => "ANGLE",
-                                figcraft_doc::HandleMirroring::AngleAndLength => "ANGLE_AND_LENGTH",
+                                designbox_doc::HandleMirroring::None => "NONE",
+                                designbox_doc::HandleMirroring::Angle => "ANGLE",
+                                designbox_doc::HandleMirroring::AngleAndLength => "ANGLE_AND_LENGTH",
                             }),
                         ));
                     }
@@ -1799,10 +1799,10 @@ impl<'d> Exporter<'d> {
                     return None;
                 }
                 let mut p = if whole {
-                    figcraft_doc::geom::ellipse(gw, gh, 0.0, std::f64::consts::TAU, 0.0)
+                    designbox_doc::geom::ellipse(gw, gh, 0.0, std::f64::consts::TAU, 0.0)
                 } else {
                     let radii = n.corners.radii.map(|r| if r > 0.0 { (r + d).max(0.0) } else { 0.0 });
-                    figcraft_doc::geom::rounded_rect(gw, gh, radii, n.corners.smoothing)
+                    designbox_doc::geom::rounded_rect(gw, gh, radii, n.corners.smoothing)
                 };
                 p.apply_affine(Affine::translate((-d, -d)));
                 Some(p)
@@ -1814,10 +1814,10 @@ impl<'d> Exporter<'d> {
             let path = match &n.kind {
                 NodeKind::Vector { network } => Some(network.stroke_path()),
                 NodeKind::Text(_) => None,
-                _ => figcraft_doc::geometry::shape_path(n),
+                _ => designbox_doc::geometry::shape_path(n),
             };
             let Some(path) = path.filter(|p| !p.elements().is_empty()) else { return };
-            use figcraft_doc::geom::kurbo::{Cap, Join, Stroke, StrokeOpts, stroke};
+            use designbox_doc::geom::kurbo::{Cap, Join, Stroke, StrokeOpts, stroke};
             let cap = match sp.cap_start {
                 StrokeCap::Round => Cap::Round,
                 StrokeCap::Square => Cap::Square,
@@ -2244,12 +2244,12 @@ impl<'d> Exporter<'d> {
 }
 
 /// The plugin id and key under which a layer written as an outline keeps what it was.
-pub(super) const STASH: (&str, &str) = ("figcraft", "stroke");
+pub(super) const STASH: (&str, &str) = ("designbox", "stroke");
 /// Longest kept description of such a layer (bytes of JSON).
 const MAX_STASH: usize = 1 << 20;
 
 /// Whether a width profile reaches further on one side of the path than on the other.
-fn one_sided(p: &figcraft_doc::WidthProfile) -> bool {
+fn one_sided(p: &designbox_doc::WidthProfile) -> bool {
     p.points.iter().any(|q| q.bias.abs() > 1e-6)
 }
 
@@ -2273,12 +2273,12 @@ fn outlined(n: &Node) -> Option<(Node, String)> {
     {
         return None;
     }
-    let path = figcraft_doc::geometry::stroke_geometry(n)?;
+    let path = designbox_doc::geometry::stroke_geometry(n)?;
     let net = match &n.kind {
         NodeKind::Vector { network } => Some(network),
         _ => None,
     };
-    let area = figcraft_pathops::stroke_outline_of(&path, sp, figcraft_doc::geometry::is_closed(n), net);
+    let area = designbox_pathops::stroke_outline_of(&path, sp, designbox_doc::geometry::is_closed(n), net);
     if area.elements().is_empty() || area.elements().len() > MAX_NETWORK / 4 {
         return None;
     }
@@ -2510,7 +2510,7 @@ fn style_fields(st: &TextStyle, f: &mut Fields) {
 }
 
 /// Layout grid `index` of a layer, with the variables `bound` to its fields.
-fn layout_grid(g: &figcraft_doc::LayoutGrid, index: usize, bound: &Bound) -> Kv<'static> {
+fn layout_grid(g: &designbox_doc::LayoutGrid, index: usize, bound: &Bound) -> Kv<'static> {
     let (pattern, axis) = match g.kind {
         GridKind::Grid => ("GRID", "X"),
         GridKind::Columns => ("STRIPES", "X"),
@@ -2538,13 +2538,13 @@ fn layout_grid(g: &figcraft_doc::LayoutGrid, index: usize, bound: &Bound) -> Kv<
     o(f)
 }
 
-fn export_setting(x: &figcraft_doc::ExportSetting) -> Kv<'static> {
+fn export_setting(x: &designbox_doc::ExportSetting) -> Kv<'static> {
     let format = match x.format {
         // The format has no WebP export setting.
-        figcraft_doc::ExportFormat::Png | figcraft_doc::ExportFormat::Webp => "PNG",
-        figcraft_doc::ExportFormat::Jpg => "JPEG",
-        figcraft_doc::ExportFormat::Svg => "SVG",
-        figcraft_doc::ExportFormat::Pdf => "PDF",
+        designbox_doc::ExportFormat::Png | designbox_doc::ExportFormat::Webp => "PNG",
+        designbox_doc::ExportFormat::Jpg => "JPEG",
+        designbox_doc::ExportFormat::Svg => "SVG",
+        designbox_doc::ExportFormat::Pdf => "PDF",
     };
     let (ty, value) = match x.size {
         ExportSize::Scale { value } => ("CONTENT_SCALE", value),

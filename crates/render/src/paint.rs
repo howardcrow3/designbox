@@ -2,8 +2,8 @@
 
 use std::sync::Arc;
 
-use figcraft_color::{BlendMode, Color, Gradient, GradientKind, ImagePaint, ImageScaleMode, Paint, PaintKind};
-use figcraft_doc::Document;
+use designbox_color::{BlendMode, Color, Gradient, GradientKind, ImagePaint, ImageScaleMode, Paint, PaintKind};
+use designbox_doc::Document;
 use tiny_skia::{FilterQuality, GradientStop, Pixmap, Point, Shader, SpreadMode, Transform};
 
 pub fn ts_color(c: Color) -> tiny_skia::Color {

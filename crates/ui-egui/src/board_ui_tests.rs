@@ -5,9 +5,9 @@
 //! and the marks design files and boards get.
 
 use egui::{Event, Modifiers, PointerButton, Pos2, Rect, pos2};
-use figcraft_doc::{BoardItem, BoardShape, FileKind, NodeId, Routing, Stamp, StrokeCap, board_color};
-use figcraft_engine::Session;
-use figcraft_engine::tools::ToolId;
+use designbox_doc::{BoardItem, BoardShape, FileKind, NodeId, Routing, Stamp, StrokeCap, board_color};
+use designbox_engine::Session;
+use designbox_engine::tools::ToolId;
 use serde_json::{Value, json};
 
 use crate::layers_drag_tests::Ui;
@@ -122,7 +122,7 @@ fn the_selection_bar_recolours_reshapes_and_restyles() {
     // Text size L: after the colours (208) and the shape menu (52), the third of the 30-wide cells.
     let r = bar(&u).unwrap();
     click(&mut u, pos2(r.min.x + 208.0 + 52.0 + 2.0 * 30.0 + 14.0, cy));
-    let text = figcraft_engine::board::text_of(u.app.session.doc().unwrap(), shape).unwrap();
+    let text = designbox_engine::board::text_of(u.app.session.doc().unwrap(), shape).unwrap();
     assert_eq!(u.app.session.doc().unwrap().node(text).unwrap().kind.text().unwrap().style.font_size, 24.0);
     // The shape menu lists the outlines.
     let r = bar(&u).unwrap();
@@ -167,7 +167,7 @@ fn a_board_you_only_view_offers_no_bar() {
     let st = id(&h.app.session.execute("board.sticky", &json!({"x": 0, "y": 0})).unwrap());
     h.frames(2);
     assert!(bar_shown(&h.ctx), "the bar shows for the selected sticky");
-    crate::live_server_tests::joined(&mut h, figcraft_engine::live::Access::View);
+    crate::live_server_tests::joined(&mut h, designbox_engine::live::Access::View);
     h.app.session.execute("select.set", &json!({"ids": [st]})).unwrap();
     h.frames(2);
     assert!(h.app.session.active_read_only().is_some());
@@ -207,6 +207,6 @@ fn the_next_sticky_from_the_keyboard_goes_on_typing() {
     crate::menus::invoke(&mut u.app, "board.nextSticky");
     let doc = u.app.session.doc().unwrap();
     let te = u.app.session.ds().unwrap().text_edit.clone().expect("typing in the new sticky");
-    let owner = figcraft_engine::board::owner_of_text(doc, te.id).unwrap();
+    let owner = designbox_engine::board::owner_of_text(doc, te.id).unwrap();
     assert_eq!(doc.node(owner).unwrap().transform.translation().x, 224.0);
 }

@@ -4,8 +4,8 @@
 use std::collections::HashMap;
 use std::net::{IpAddr, Ipv4Addr};
 
-use figcraft_collab::{Limits, Server};
-use figcraft_doc::Document;
+use designbox_collab::{Limits, Server};
+use designbox_doc::Document;
 
 use super::{Admission, Backend, Closing, Hub, InFlight, Room};
 

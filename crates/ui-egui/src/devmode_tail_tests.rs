@@ -1,7 +1,7 @@
 //! Dev Mode in the UI, the tail: the compare view compares with a saved version picked at its
 //! bottom, and falls back when that version goes away.
 
-use figcraft_engine::Session;
+use designbox_engine::Session;
 use serde_json::json;
 
 use crate::dev_compare::CompareView;
@@ -56,7 +56,7 @@ fn dev_mode_keys_refuse_design_edits_and_say_why() {
     assert!(u.app.session.doc().unwrap().contains(r), "not deleted");
     assert_eq!(x(&u), Some(20.0), "not nudged");
     assert_eq!(u.app.session.doc().unwrap().node(r).map(|n| n.opacity), Some(1.0), "opacity kept");
-    assert_eq!(u.app.session.tool.tool, figcraft_engine::tools::ToolId::Move, "no drawing tool");
+    assert_eq!(u.app.session.tool.tool, designbox_engine::tools::ToolId::Move, "no drawing tool");
     assert!(u.app.ui.toast.as_ref().is_some_and(|(m, _)| m.contains("Shift+D")));
     // In the design the same keys edit.
     u.app.ui.right_tab = crate::RightTab::Design;
@@ -104,7 +104,7 @@ fn dev_mode_pastes_only_a_comments_link() {
     app.ui.right_tab = crate::RightTab::Inspect;
     crate::menus::paste(&mut app, None, None);
     assert_eq!(layers(&app), 0, "text doesn't paste into the design in Dev Mode");
-    app.services = Box::new(TextClip(format!("figcraft://comment/{c}")));
+    app.services = Box::new(TextClip(format!("designbox://comment/{c}")));
     crate::menus::paste(&mut app, None, None);
     assert_eq!(app.ui.comments.open, Some(c), "the link opens its thread");
 }

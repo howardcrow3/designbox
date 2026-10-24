@@ -2,10 +2,10 @@
 
 use std::sync::Arc;
 
-use figcraft_doc::proto::{Action, ConditionalBlock, Expr, ExprOp, Interaction, Trigger};
-use figcraft_doc::{Document, NodeId, VariableValue};
-use figcraft_engine::Session;
-use figcraft_engine::params::id_of;
+use designbox_doc::proto::{Action, ConditionalBlock, Expr, ExprOp, Interaction, Trigger};
+use designbox_doc::{Document, NodeId, VariableValue};
+use designbox_engine::Session;
+use designbox_engine::params::id_of;
 use serde_json::json;
 
 use super::Presenter;
@@ -95,7 +95,7 @@ fn set_variable_mode_recolours_bound_layers() {
 fn deeply_nested_conditionals_stop() {
     let (mut doc, a, b, button) = setup();
     let mut act = Action::Navigate { dest: b, preserve_scroll: false };
-    for _ in 0..(figcraft_doc::proto::MAX_ACTION_DEPTH * 3) {
+    for _ in 0..(designbox_doc::proto::MAX_ACTION_DEPTH * 3) {
         act = Action::Conditional { blocks: vec![ConditionalBlock { condition: None, actions: vec![act] }] };
     }
     on_click(&mut doc, button, vec![act]);

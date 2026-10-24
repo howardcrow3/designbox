@@ -7,8 +7,8 @@
 use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_color::PaintKind;
-use figcraft_doc::*;
+use designbox_color::PaintKind;
+use designbox_doc::*;
 
 use crate::cmd::lists::{BoundList, list_binding, stop_binding};
 

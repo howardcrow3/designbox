@@ -3,7 +3,7 @@
 use crate::common;
 
 use common::Client;
-use figcraft_mcp::{PROTOCOL_VERSION, Server, TOOL_NAMES};
+use designbox_mcp::{PROTOCOL_VERSION, Server, TOOL_NAMES};
 use serde_json::{Value, json};
 
 fn reply(s: &mut Server, line: &str) -> Value {
@@ -17,7 +17,7 @@ fn initialize_negotiates_versions() {
         let mut s = Server::headless();
         let r = reply(&mut s, &json!({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": asked}}).to_string());
         assert_eq!(r["result"]["protocolVersion"], want);
-        assert_eq!(r["result"]["serverInfo"]["name"], "figcraft");
+        assert_eq!(r["result"]["serverInfo"]["name"], "designbox");
         let caps = &r["result"]["capabilities"];
         assert!(caps["tools"].is_object() && caps["resources"].is_object() && caps["prompts"].is_object());
         let ins = r["result"]["instructions"].as_str().unwrap();
@@ -74,7 +74,7 @@ fn tools_call_happy_and_error_paths() {
     assert!(c.err("batch", json!({"commands": [{"command": 3}]})).contains("step 0"));
     assert!(c.err("pointer", json!({"x": 1})).contains("`y`"));
     assert!(c.err("type_text", json!({"text": "hi"})).contains("not editing text"));
-    assert!(c.err("open_file", json!({"path": "/definitely/not/here.figcraft"})).contains("here.figcraft"));
+    assert!(c.err("open_file", json!({"path": "/definitely/not/here.designbox"})).contains("here.designbox"));
     // Protocol-level errors.
     let r = c.rpc("tools/call", json!({"name": "no_such_tool", "arguments": {}}));
     assert_eq!(r["error"]["code"], -32602);
@@ -113,21 +113,21 @@ fn resources_and_templates() {
     let mut c = Client::new();
     let list = c.rpc("resources/list", json!({}));
     let uris: Vec<&str> = list["result"]["resources"].as_array().unwrap().iter().map(|r| r["uri"].as_str().unwrap()).collect();
-    assert!(uris.contains(&"figcraft://document"));
+    assert!(uris.contains(&"designbox://document"));
     let t = c.rpc("resources/templates/list", json!({}));
     let tpl: Vec<&str> = t["result"]["resourceTemplates"].as_array().unwrap().iter().map(|r| r["uriTemplate"].as_str().unwrap()).collect();
-    assert_eq!(tpl, ["figcraft://node/{id}", "figcraft://command/{id}"]);
+    assert_eq!(tpl, ["designbox://node/{id}", "designbox://command/{id}"]);
 
     let id = c.create(json!({"type": "frame", "name": "Hero", "width": 200, "height": 100}));
-    let r = c.rpc("resources/read", json!({"uri": "figcraft://document"}));
+    let r = c.rpc("resources/read", json!({"uri": "designbox://document"}));
     let doc: Value = serde_json::from_str(r["result"]["contents"][0]["text"].as_str().unwrap()).unwrap();
     assert!(doc["pages"].is_array());
-    let r = c.rpc("resources/read", json!({"uri": format!("figcraft://node/{id}")}));
+    let r = c.rpc("resources/read", json!({"uri": format!("designbox://node/{id}")}));
     let n: Value = serde_json::from_str(r["result"]["contents"][0]["text"].as_str().unwrap()).unwrap();
     assert_eq!(n["name"], "Hero");
-    let r = c.rpc("resources/read", json!({"uri": "figcraft://command/layout.add"}));
+    let r = c.rpc("resources/read", json!({"uri": "designbox://command/layout.add"}));
     assert!(r["result"]["contents"][0]["text"].as_str().unwrap().contains("Add auto layout"));
-    for bad in ["figcraft://node/123456", "figcraft://node/xyz", "figcraft://command/nope", "http://example.com"] {
+    for bad in ["designbox://node/123456", "designbox://node/xyz", "designbox://command/nope", "http://example.com"] {
         assert_eq!(c.rpc("resources/read", json!({"uri": bad}))["error"]["code"], -32002, "{bad}");
     }
     assert_eq!(c.rpc("resources/read", json!({}))["error"]["code"], -32602);

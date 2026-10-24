@@ -3,8 +3,8 @@
 //! board tools' flyouts share.
 
 use egui::{Color32, CornerRadius, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
-use figcraft_doc::{BOARD_COLORS, BoardItem, BoardShape, NodeKind, Routing, Stamp, StrokeCap};
-use figcraft_engine::board::{BoardTool, TEXT_SIZES};
+use designbox_doc::{BOARD_COLORS, BoardItem, BoardShape, NodeKind, Routing, Stamp, StrokeCap};
+use designbox_engine::board::{BoardTool, TEXT_SIZES};
 use serde_json::{Value, json};
 
 use crate::FigApp;
@@ -16,7 +16,7 @@ use crate::toolbar::Options;
 
 /// What a swatch shows.
 pub(crate) enum Mark {
-    Color(figcraft_color::Color),
+    Color(designbox_color::Color),
     Shape(BoardShape),
     Stamp(Stamp),
 }
@@ -71,20 +71,20 @@ pub(crate) fn paint_choice(p: &egui::Painter, r: Rect, mark: &Mark, ink: Color32
         }
         Mark::Shape(s) => {
             let path = s.path(14.0, 14.0);
-            let path = figcraft_geom::Affine::translate((1.0, 1.0)) * path;
+            let path = designbox_geom::Affine::translate((1.0, 1.0)) * path;
             icons::paint_outlines(p, r, 16.0, &[(&path, false)], ink, 1.2);
         }
         Mark::Stamp(s) => {
             p.circle_filled(r.center(), r.width().min(r.height()) / 2.0, c32(s.color()));
-            let parts: Vec<(figcraft_geom::BezPath, bool)> =
-                s.mark().iter().filter_map(|m| figcraft_geom::BezPath::from_svg(m.d).ok().map(|b| (b, m.filled))).collect();
-            let refs: Vec<(&figcraft_geom::BezPath, bool)> = parts.iter().map(|(b, f)| (b, *f)).collect();
-            icons::paint_outlines(p, r, figcraft_doc::STAMP_SIZE, &refs, Color32::WHITE, 3.0);
+            let parts: Vec<(designbox_geom::BezPath, bool)> =
+                s.mark().iter().filter_map(|m| designbox_geom::BezPath::from_svg(m.d).ok().map(|b| (b, m.filled))).collect();
+            let refs: Vec<(&designbox_geom::BezPath, bool)> = parts.iter().map(|(b, f)| (b, *f)).collect();
+            icons::paint_outlines(p, r, designbox_doc::STAMP_SIZE, &refs, Color32::WHITE, 3.0);
         }
     }
 }
 
-fn c32(c: figcraft_color::Color) -> Color32 {
+fn c32(c: designbox_color::Color) -> Color32 {
     let [r, g, b, a] = c.to_rgba8();
     Color32::from_rgba_unmultiplied(r, g, b, a)
 }
@@ -161,7 +161,7 @@ pub(crate) fn place(sel: Rect, size: egui::Vec2, canvas: Rect) -> Pos2 {
 /// The bar above a board's selection, while nothing is being dragged and the file can be edited.
 pub fn show(app: &mut FigApp, ctx: &egui::Context) {
     let editable = app.session.active_read_only().is_none();
-    if app.session.tool.busy() || !editable || !app.session.doc().is_ok_and(figcraft_engine::board::is_board) {
+    if app.session.tool.busy() || !editable || !app.session.doc().is_ok_and(designbox_engine::board::is_board) {
         return;
     }
     let Some(h) = has(app) else { return };

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=DesignBox
+GenericName=Interface Design Tool
+Comment=Design and prototype user interfaces
+Exec=designbox %U
+TryExec=designbox
+Icon=studio.turtlebox.designbox
+Terminal=false
+StartupNotify=true
+StartupWMClass=studio.turtlebox.designbox
+Categories=Graphics;2DGraphics;VectorGraphics;X-Design;
+Keywords=design;interface;ui;ux;prototype;wireframe;mockup;vector;layout;components;
+MimeType=application/x-designbox;image/svg+xml;image/png;image/jpeg;x-scheme-handler/designbox;

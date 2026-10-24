@@ -8,9 +8,9 @@
 //! through its whole size (as in Figma, with no overflow setting), while content past the frame's
 //! own edges scrolls only as its overflow allows and is otherwise clipped. A responsive prototype's frame is instead resized to the screen
 //! (the device's, else the player's whole area) and laid out again, its constraints and auto layout
-//! responding (`figcraft_engine::cmd::proto::respond`, on the player's copy, from the design each
+//! responding (`designbox_engine::cmd::proto::respond`, on the player's copy, from the design each
 //! time). Device bodies are drawn in code in the device's colour. Every frame is rendered through
-//! `figcraft_render::render_node`
+//! `designbox_render::render_node`
 //! into a texture. Smart animate interpolates a temporary document between the outgoing and
 //! incoming states ([`smart_interpolate`]) and renders it each animation frame; the other
 //! transitions move or fade the two cached textures ([`transition_frames`]).
@@ -24,12 +24,12 @@ use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};
 use std::sync::Arc;
 
 use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
-use figcraft_color::{Color, Paint, PaintKind};
-use figcraft_doc::proto::{
+use designbox_color::{Color, Paint, PaintKind};
+use designbox_doc::proto::{
     Action, Device, DeviceColor, Direction, Easing, KeyMods, Overflow, OverlayPosition, PrototypeSettings, ScrollPosition, Transition, Trigger,
 };
-use figcraft_doc::{Document, HConstraint, Node, NodeId, NodeKind, VConstraint};
-use figcraft_geom::{Affine, Point};
+use designbox_doc::{Document, HConstraint, Node, NodeId, NodeKind, VConstraint};
+use designbox_geom::{Affine, Point};
 use serde_json::{Value, json};
 
 use crate::FigApp;
@@ -82,7 +82,7 @@ struct FrameTex {
     key: (u64, u64, u64),
     tex: egui::TextureHandle,
     /// Page-space rect the texture covers.
-    bounds: figcraft_geom::Rect,
+    bounds: designbox_geom::Rect,
 }
 
 /// A transition in progress from a captured state to the current one.
@@ -507,12 +507,12 @@ impl Presenter {
         let mut d = self.design.clone();
         if let Some(d) = d.as_mut() {
             if let Some(size) = self.fit {
-                figcraft_engine::cmd::proto::respond(d, self.current, size);
+                designbox_engine::cmd::proto::respond(d, self.current, size);
             }
-            figcraft_engine::proto_run::play_interactions(d);
+            designbox_engine::proto_run::play_interactions(d);
             raise_fixed(d);
         }
-        self.uses_pads = d.as_ref().is_some_and(figcraft_doc::proto::uses_gamepad);
+        self.uses_pads = d.as_ref().is_some_and(designbox_doc::proto::uses_gamepad);
         self.doc = d;
         self.rev += 1;
     }
@@ -522,7 +522,7 @@ impl Presenter {
     /// [`relayout`](Self::relayout).
     fn settle(&mut self, before: &Document) {
         if let Some(d) = self.design.as_mut() {
-            figcraft_engine::normalize(d, before);
+            designbox_engine::normalize(d, before);
         }
         self.relayout();
     }
@@ -575,7 +575,7 @@ impl Presenter {
                 continue;
             }
             let rel = doc.world_transform(f).inverse() * doc.world_transform(target);
-            let b = figcraft_geom::transform_rect_bbox(rel, tn.local_rect());
+            let b = designbox_geom::transform_rect_bbox(rel, tn.local_rect());
             let from = self.scroll.get(&f).copied().unwrap_or((0.0, 0.0));
             let to = clamp_scroll((if rx > 0.0 { b.x0 - off[0] } else { from.0 }, if ry > 0.0 { b.y0 - off[1] } else { from.1 }), (rx, ry));
             out.push((f, from, to));
@@ -656,7 +656,7 @@ impl Presenter {
 
     fn arrive(&mut self, now: f64) {
         if let Some(doc) = self.doc.as_ref() {
-            figcraft_engine::proto_run::remember_sections(doc, self.current, &mut self.sections);
+            designbox_engine::proto_run::remember_sections(doc, self.current, &mut self.sections);
         }
         self.arrived = now;
         self.delays_fired.clear();
@@ -773,11 +773,11 @@ impl Presenter {
     /// Run the widget clicks the player took: each calls its plugin back on the player's copy (the
     /// prototype's own state of the widget), as on the canvas but without touching the file.
     /// Returns what went wrong, for a toast.
-    pub fn click_widgets(&mut self, s: &figcraft_engine::Session) -> Option<String> {
+    pub fn click_widgets(&mut self, s: &designbox_engine::Session) -> Option<String> {
         let mut error = None;
         for (id, target) in std::mem::take(&mut self.widget_clicks) {
             let Some(doc) = self.design.clone() else { break };
-            match figcraft_engine::widgets::click_on(s, doc, id, &target) {
+            match designbox_engine::widgets::click_on(s, doc, id, &target) {
                 Ok((d, _)) => {
                     self.design = Some(d);
                     self.relayout();
@@ -798,7 +798,7 @@ impl Presenter {
         let Some(doc) = self.doc.clone() else { return false };
         match a {
             Action::Navigate { dest, preserve_scroll } => {
-                let Some(top) = figcraft_engine::proto_run::navigate_target(&doc, *dest, &self.sections) else { return false };
+                let Some(top) = designbox_engine::proto_run::navigate_target(&doc, *dest, &self.sections) else { return false };
                 if !doc.contains(top) || (top == self.current && self.overlays.is_empty()) {
                     return false;
                 }
@@ -883,13 +883,13 @@ impl Presenter {
             Action::OpenUrl { url } => {
                 // The URL comes from the document and this action fires from whatever trigger the
                 // prototype sets, including a delay, so no click is implied: only a web link opens.
-                if figcraft_engine::doc_urls::openable(url) {
+                if designbox_engine::doc_urls::openable(url) {
                     self.urls.push(url.clone());
                 }
                 true
             }
             Action::ChangeTo { dest } => {
-                let Some(inst) = figcraft_engine::proto_run::change_to_target(&doc, node, *dest) else { return false };
+                let Some(inst) = designbox_engine::proto_run::change_to_target(&doc, node, *dest) else { return false };
                 if !doc.contains(*dest) {
                     return false;
                 }
@@ -901,14 +901,14 @@ impl Presenter {
                 {
                     *component = *dest;
                 }
-                figcraft_engine::components::sync_instance(d, inst);
+                designbox_engine::components::sync_instance(d, inst);
                 self.settle(&before);
                 true
             }
             Action::SetVariable { variable, value, expr } => {
                 let Some(d) = self.design.as_mut() else { return false };
                 let before = d.clone();
-                let set = figcraft_engine::proto_run::set_variable(d, node, variable, value, expr.as_ref());
+                let set = designbox_engine::proto_run::set_variable(d, node, variable, value, expr.as_ref());
                 if set {
                     self.settle(&before);
                 }
@@ -917,19 +917,19 @@ impl Presenter {
             Action::SetVariableMode { collection, mode } => {
                 let Some(d) = self.design.as_mut() else { return false };
                 let before = d.clone();
-                let set = figcraft_engine::proto_run::set_mode(d, self.current, collection, mode);
+                let set = designbox_engine::proto_run::set_mode(d, self.current, collection, mode);
                 if set {
                     self.settle(&before);
                 }
                 set
             }
             Action::Conditional { blocks } => {
-                if depth >= figcraft_doc::proto::MAX_ACTION_DEPTH {
+                if depth >= designbox_doc::proto::MAX_ACTION_DEPTH {
                     return false;
                 }
                 // Evaluated now: earlier actions of the interaction may have changed variables.
                 let mut did = false;
-                for inner in figcraft_engine::proto_run::branch(&doc, node, blocks) {
+                for inner in designbox_engine::proto_run::branch(&doc, node, blocks) {
                     did |= self.perform_at(&inner, node, tr, dur, easing, rect, now, depth + 1);
                 }
                 did
@@ -943,7 +943,7 @@ impl Presenter {
         // display frame before the time asked for, a little earlier still at times: ask that much
         // later, and count a frame due within a few milliseconds as due.
         let t = (now - self.arrived).max(0.0) + 0.005;
-        let clock = figcraft_render::images::animation_clock(doc, id, t);
+        let clock = designbox_render::images::animation_clock(doc, id, t);
         if let Some((_, next)) = clock {
             crate::repaint_in(ctx, next + f64::from(ctx.input(|i| i.predicted_dt)));
         }
@@ -953,8 +953,8 @@ impl Presenter {
         {
             return Some(t.clone());
         }
-        let bounds = figcraft_render::export_bounds(doc, id)?;
-        let pix = figcraft_render::render_node_at(doc, id, texture_scale(ctx, bounds, px_scale), t)?;
+        let bounds = designbox_render::export_bounds(doc, id)?;
+        let pix = designbox_render::render_node_at(doc, id, texture_scale(ctx, bounds, px_scale), t)?;
         let img = crate::render_worker::screen_image(&pix, doc.color_profile);
         let tex = ctx.load_texture(format!("present-{}", id.0), img, egui::TextureOptions::LINEAR);
         let ft = FrameTex { key, tex, bounds };
@@ -969,7 +969,7 @@ const MAX_TEXTURE_PIXELS: f64 = 16_777_216.0;
 
 /// The pixel scale, at most `px`, at which `bounds` makes a texture the GPU takes (no side past
 /// its limit) of at most [`MAX_TEXTURE_PIXELS`].
-fn texture_scale(ctx: &egui::Context, bounds: figcraft_geom::Rect, px: f64) -> f64 {
+fn texture_scale(ctx: &egui::Context, bounds: designbox_geom::Rect, px: f64) -> f64 {
     let side = ctx.input(|i| i.max_texture_side) as f64 - 2.0;
     let (w, h) = (bounds.width().max(1.0), bounds.height().max(1.0));
     let s = px.min(side / w.max(h)).min((MAX_TEXTURE_PIXELS / (w * h)).sqrt());
@@ -985,14 +985,14 @@ pub struct Place {
 }
 
 impl Place {
-    fn centered(fb: figcraft_geom::Rect, center: Pos2, scale: f64) -> Self {
+    fn centered(fb: designbox_geom::Rect, center: Pos2, scale: f64) -> Self {
         let size = vec2((fb.width() * scale) as f32, (fb.height() * scale) as f32);
         Place { page_min: (fb.x0, fb.y0), origin: center - size / 2.0, scale }
     }
     pub fn pt(&self, x: f64, y: f64) -> Pos2 {
         pos2(self.origin.x + ((x - self.page_min.0) * self.scale) as f32, self.origin.y + ((y - self.page_min.1) * self.scale) as f32)
     }
-    pub fn rect(&self, r: figcraft_geom::Rect) -> Rect {
+    pub fn rect(&self, r: designbox_geom::Rect) -> Rect {
         Rect::from_min_max(self.pt(r.x0, r.y0), self.pt(r.x1, r.y1))
     }
     /// The page point under screen point `q`.
@@ -1204,7 +1204,7 @@ pub fn scroll_range_in(doc: &Document, frame: NodeId, viewport: Option<(f64, f64
         if !cn.visible || cn.scroll_position == ScrollPosition::Fixed {
             continue;
         }
-        let b = figcraft_geom::transform_rect_bbox(cn.transform, cn.local_rect());
+        let b = designbox_geom::transform_rect_bbox(cn.transform, cn.local_rect());
         x1 = x1.max(b.x1);
         y1 = y1.max(b.y1);
     }
@@ -1365,7 +1365,7 @@ pub fn apply_scroll(doc: &Document, scroll: &HashMap<NodeId, (f64, f64)>) -> Doc
                 ScrollPosition::Fixed => continue,
                 ScrollPosition::Scrolls => (-sx, -sy),
                 ScrollPosition::Sticky => {
-                    let b = figcraft_geom::transform_rect_bbox(cn.transform, cn.local_rect());
+                    let b = designbox_geom::transform_rect_bbox(cn.transform, cn.local_rect());
                     (sticky(b.x0, sx), sticky(b.y0, sy))
                 }
             };
@@ -1469,7 +1469,7 @@ pub fn overlay_rect(pos: OverlayPosition, base: Rect, size: Vec2, anchor: Option
 /// The hotspots of the screen `root` (its visible layers with interactions, bottom-most first)
 /// placed on screen and clipped by `screen`.
 fn hotspots(doc: &Document, root: NodeId, place: &Place, screen: Rect) -> Vec<(NodeId, Rect)> {
-    figcraft_engine::proto_run::hotspots(doc, root)
+    designbox_engine::proto_run::hotspots(doc, root)
         .into_iter()
         .map(|(id, b)| (id, place.rect(b).intersect(screen)))
         .filter(|(_, r)| r.is_positive())
@@ -1874,7 +1874,7 @@ fn poll_pads(app: &mut FigApp, p: &mut Presenter, ctx: &egui::Context) {
     let down = held & !p.pads_held;
     p.pads_held = held;
     // Each press once, in layout order.
-    let pressed = (0..u32::BITS as usize).filter(|i| down & (1 << i) != 0).filter_map(figcraft_doc::proto::gamepad_button);
+    let pressed = (0..u32::BITS as usize).filter(|i| down & (1 << i) != 0).filter_map(designbox_doc::proto::gamepad_button);
     p.pads.extend(pressed.map(str::to_string));
     crate::repaint_in(ctx, PAD_POLL_SECS);
 }
@@ -1903,7 +1903,7 @@ fn inspect_panel(app: &mut FigApp, ui: &mut Ui, pres: &Presenter) {
             return;
         };
         widgets::section_header(ui, &name, &[], false);
-        for section in figcraft_engine::devinspect::properties(doc, id) {
+        for section in designbox_engine::devinspect::properties(doc, id) {
             crate::right::inspect_section(app, ui, &section);
         }
     });
@@ -1937,12 +1937,12 @@ pub struct Pane {
 }
 
 /// The top-level frame of the editor's first selected layer.
-fn selected_frame(ds: &figcraft_engine::DocState) -> Option<NodeId> {
+fn selected_frame(ds: &designbox_engine::DocState) -> Option<NodeId> {
     ds.selection.first().and_then(|i| ds.doc.top_level_frame(*i))
 }
 
 impl Pane {
-    pub fn new(start: NodeId, session: &figcraft_engine::Session) -> Self {
+    pub fn new(start: NodeId, session: &designbox_engine::Session) -> Self {
         let (doc_uid, selected) = session.ds().map(|ds| (ds.uid, selected_frame(ds))).unwrap_or((0, None));
         Pane { player: Presenter::new(start), doc_uid, selected }
     }
@@ -2660,7 +2660,7 @@ fn input(p: &mut Presenter, ctx: &egui::Context, l: &Layout, over_area: bool, ke
             }
             // A widget's clickable part calls its plugin back (after the frame, with the session).
             if let Some(q) = pos
-                && let Some(t) = layer_at(doc, root, &place, q).and_then(|hit| figcraft_engine::widgets::target_at(doc, hit, place.page(q)))
+                && let Some(t) = layer_at(doc, root, &place, q).and_then(|hit| designbox_engine::widgets::target_at(doc, hit, place.page(q)))
             {
                 p.widget_clicks.push(t);
                 return;
@@ -2761,9 +2761,9 @@ fn draw(p: &mut Presenter, painter: &egui::Painter, ctx: &egui::Context, l: &Lay
                 #[cfg(not(target_arch = "wasm32"))]
                 let t0 = std::time::Instant::now();
                 let tmp = smart_interpolate(&a.from_doc, a.from_frame, &l.disp, p.current, e);
-                let bounds = figcraft_render::export_bounds(&tmp, p.current);
+                let bounds = designbox_render::export_bounds(&tmp, p.current);
                 if let Some(b) = bounds
-                    && let Some(pix) = figcraft_render::render_node(&tmp, p.current, texture_scale(ctx, b, px))
+                    && let Some(pix) = designbox_render::render_node(&tmp, p.current, texture_scale(ctx, b, px))
                 {
                     let img = crate::render_worker::screen_image(&pix, tmp.color_profile);
                     let tex = match &mut p.anim_tex {
@@ -2880,13 +2880,13 @@ mod delay_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use figcraft_doc::NodeKind;
+    use designbox_doc::NodeKind;
 
     use crate::present_tests::{Ui, id};
 
     #[test]
     fn device_picker_reflows_without_resizing_the_saved_frame_and_can_revert() {
-        let mut session = figcraft_engine::Session::new();
+        let mut session = designbox_engine::Session::new();
         let frame = id(&session.execute("node.create", &json!({"type": "frame", "width": 894, "height": 844})).unwrap());
         let right = id(&session
             .execute("node.create", &json!({"type": "rectangle", "parent": frame, "x": 804, "y": 20, "width": 80, "height": 40}))
@@ -2928,7 +2928,7 @@ mod tests {
 
     #[test]
     fn device_presets_show_their_screen_at_the_real_resolution_in_their_body() {
-        let mut session = figcraft_engine::Session::new();
+        let mut session = designbox_engine::Session::new();
         let frame = id(&session.execute("node.create", &json!({"type": "frame", "width": 894, "height": 844})).unwrap());
         let mut ui = Ui::new(session);
         ui.run("proto.present", json!({"start": frame}));
@@ -2956,7 +2956,7 @@ mod tests {
     #[test]
     fn a_phone_scrolls_only_what_the_frames_overflow_allows() {
         let on_phone = |overflow: &str| {
-            let mut session = figcraft_engine::Session::new();
+            let mut session = designbox_engine::Session::new();
             let frame = id(&session.execute("node.create", &json!({"type": "frame", "width": 894, "height": 844})).unwrap());
             session.execute("node.create", &json!({"type": "rectangle", "parent": frame, "x": 650, "y": 1050, "width": 80, "height": 80})).unwrap();
             session.execute("node.set", &json!({"id": frame, "props": {"overflow": overflow}})).unwrap();
@@ -3312,7 +3312,7 @@ mod tests {
         let n = 10;
         for k in 0..n {
             let tmp = smart_interpolate(&d, a, &d, b, f64::from(k) / f64::from(n));
-            assert!(figcraft_render::render_node(&tmp, b, 2.0).is_some());
+            assert!(designbox_render::render_node(&tmp, b, 2.0).is_some());
         }
         let per = t0.elapsed().as_secs_f64() * 1000.0 / f64::from(n);
         eprintln!("smart animate: {per:.2} ms per frame (80 layers, 400x800 px)");

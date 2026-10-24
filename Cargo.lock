@@ -1044,6 +1044,334 @@ dependencies = [
 ]
 
 [[package]]
+name = "designbox"
+version = "0.10.0"
+dependencies = [
+ "arboard",
+ "craft-window",
+ "designbox-collab-net",
+ "designbox-engine",
+ "designbox-format",
+ "designbox-text",
+ "designbox-ui-egui",
+ "eframe",
+ "egui",
+ "env_logger",
+ "fmv-macos-events",
+ "image",
+ "log",
+ "rfd",
+ "serde_json",
+ "wat",
+ "webbrowser",
+ "windows",
+ "winit",
+ "winresource",
+]
+
+[[package]]
+name = "designbox-cli"
+version = "0.10.0"
+dependencies = [
+ "designbox-doc",
+ "designbox-engine",
+ "designbox-format",
+ "designbox-mcp",
+ "designbox-render",
+ "designbox-svg",
+ "designbox-text",
+ "serde_json",
+]
+
+[[package]]
+name = "designbox-collab"
+version = "0.10.0"
+dependencies = [
+ "base64 0.22.1",
+ "chrono",
+ "designbox-color",
+ "designbox-doc",
+ "designbox-geom",
+ "imbl",
+ "postcard",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "designbox-collab-net"
+version = "0.10.0"
+dependencies = [
+ "base64 0.22.1",
+ "designbox-collab",
+ "designbox-doc",
+ "designbox-engine",
+ "getrandom 0.4.3",
+ "js-sys",
+ "log",
+ "proptest",
+ "rustls",
+ "rustls-pki-types",
+ "serde_json",
+ "tungstenite",
+ "wasm-bindgen",
+ "web-sys",
+ "web-time",
+ "webpki-roots",
+ "windows-registry",
+]
+
+[[package]]
+name = "designbox-color"
+version = "0.10.0"
+dependencies = [
+ "kurbo",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "designbox-doc"
+version = "0.10.0"
+dependencies = [
+ "designbox-color",
+ "designbox-geom",
+ "imbl",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "designbox-engine"
+version = "0.10.0"
+dependencies = [
+ "base64 0.22.1",
+ "craft-docpath",
+ "designbox-collab",
+ "designbox-color",
+ "designbox-doc",
+ "designbox-format",
+ "designbox-geom",
+ "designbox-layout",
+ "designbox-pathops",
+ "designbox-pdf",
+ "designbox-plugin",
+ "designbox-render",
+ "designbox-svg",
+ "designbox-text",
+ "image",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "wat",
+ "web-time",
+]
+
+[[package]]
+name = "designbox-format"
+version = "0.10.0"
+dependencies = [
+ "designbox-doc",
+ "designbox-pathops",
+ "flate2",
+ "image",
+ "ruzstd",
+ "serde",
+ "serde_json",
+ "sha2",
+ "zip",
+]
+
+[[package]]
+name = "designbox-geom"
+version = "0.10.0"
+dependencies = [
+ "kurbo",
+ "serde",
+]
+
+[[package]]
+name = "designbox-layout"
+version = "0.10.0"
+dependencies = [
+ "designbox-doc",
+ "designbox-geom",
+]
+
+[[package]]
+name = "designbox-mcp"
+version = "0.10.0"
+dependencies = [
+ "base64 0.22.1",
+ "designbox-collab-net",
+ "designbox-doc",
+ "designbox-engine",
+ "designbox-geom",
+ "designbox-render",
+ "image",
+ "log",
+ "proptest",
+ "serde_json",
+]
+
+[[package]]
+name = "designbox-pathops"
+version = "0.10.0"
+dependencies = [
+ "designbox-doc",
+ "designbox-geom",
+ "linesweeper",
+]
+
+[[package]]
+name = "designbox-pdf"
+version = "0.10.0"
+dependencies = [
+ "designbox-color",
+ "designbox-doc",
+ "designbox-geom",
+ "designbox-pathops",
+ "designbox-render",
+ "designbox-text",
+ "flate2",
+ "krilla",
+ "log",
+ "thiserror 2.0.21",
+ "tiny-skia 0.12.0",
+]
+
+[[package]]
+name = "designbox-plugin"
+version = "0.10.0"
+dependencies = [
+ "designbox-color",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.21",
+ "wasmi",
+ "wat",
+]
+
+[[package]]
+name = "designbox-render"
+version = "0.10.0"
+dependencies = [
+ "crc32fast",
+ "designbox-color",
+ "designbox-doc",
+ "designbox-geom",
+ "designbox-pathops",
+ "designbox-text",
+ "image",
+ "log",
+ "moxcms",
+ "png",
+ "rayon",
+ "tiny-skia 0.12.0",
+]
+
+[[package]]
+name = "designbox-server"
+version = "0.10.0"
+dependencies = [
+ "crc32fast",
+ "ctrlc",
+ "designbox-collab",
+ "designbox-collab-net",
+ "designbox-doc",
+ "designbox-engine",
+ "designbox-format",
+ "designbox-plugin",
+ "env_logger",
+ "log",
+ "rustix 1.1.5",
+ "serde",
+ "serde_json",
+ "sha2",
+ "toml",
+ "tungstenite",
+ "wat",
+ "zip",
+]
+
+[[package]]
+name = "designbox-svg"
+version = "0.10.0"
+dependencies = [
+ "base64 0.22.1",
+ "designbox-color",
+ "designbox-doc",
+ "designbox-geom",
+ "designbox-pathops",
+ "designbox-render",
+ "designbox-text",
+ "flate2",
+ "thiserror 2.0.21",
+ "usvg",
+]
+
+[[package]]
+name = "designbox-text"
+version = "0.10.0"
+dependencies = [
+ "designbox-doc",
+ "designbox-geom",
+ "harfrust 0.13.3",
+ "log",
+ "png",
+ "skrifa 0.47.0",
+ "unicode-bidi",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "designbox-ui-egui"
+version = "0.10.0"
+dependencies = [
+ "base64 0.22.1",
+ "chrono",
+ "designbox-color",
+ "designbox-doc",
+ "designbox-engine",
+ "designbox-format",
+ "designbox-geom",
+ "designbox-layout",
+ "designbox-pathops",
+ "designbox-render",
+ "designbox-text",
+ "egui",
+ "egui_extras",
+ "image",
+ "log",
+ "serde",
+ "serde_json",
+ "toml",
+ "wat",
+ "web-time",
+]
+
+[[package]]
+name = "designbox-web"
+version = "0.10.0"
+dependencies = [
+ "designbox-collab-net",
+ "designbox-engine",
+ "designbox-ui-egui",
+ "eframe",
+ "egui",
+ "js-sys",
+ "log",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1462,334 +1790,6 @@ name = "fearless_simd"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b97b65636e5b9ef369943878ac74335ba1c55c1cb6adbf1e2c293c624248d693"
-
-[[package]]
-name = "figcraft"
-version = "0.10.0"
-dependencies = [
- "arboard",
- "craft-window",
- "eframe",
- "egui",
- "env_logger",
- "figcraft-collab-net",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-text",
- "figcraft-ui-egui",
- "fmv-macos-events",
- "image",
- "log",
- "rfd",
- "serde_json",
- "wat",
- "webbrowser",
- "windows",
- "winit",
- "winresource",
-]
-
-[[package]]
-name = "figcraft-cli"
-version = "0.10.0"
-dependencies = [
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-mcp",
- "figcraft-render",
- "figcraft-svg",
- "figcraft-text",
- "serde_json",
-]
-
-[[package]]
-name = "figcraft-collab"
-version = "0.10.0"
-dependencies = [
- "base64 0.22.1",
- "chrono",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "imbl",
- "postcard",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "figcraft-collab-net"
-version = "0.10.0"
-dependencies = [
- "base64 0.22.1",
- "figcraft-collab",
- "figcraft-doc",
- "figcraft-engine",
- "getrandom 0.4.3",
- "js-sys",
- "log",
- "proptest",
- "rustls",
- "rustls-pki-types",
- "serde_json",
- "tungstenite",
- "wasm-bindgen",
- "web-sys",
- "web-time",
- "webpki-roots",
- "windows-registry",
-]
-
-[[package]]
-name = "figcraft-color"
-version = "0.10.0"
-dependencies = [
- "kurbo",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "figcraft-doc"
-version = "0.10.0"
-dependencies = [
- "figcraft-color",
- "figcraft-geom",
- "imbl",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "figcraft-engine"
-version = "0.10.0"
-dependencies = [
- "base64 0.22.1",
- "craft-docpath",
- "figcraft-collab",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-layout",
- "figcraft-pathops",
- "figcraft-pdf",
- "figcraft-plugin",
- "figcraft-render",
- "figcraft-svg",
- "figcraft-text",
- "image",
- "log",
- "regex",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "wat",
- "web-time",
-]
-
-[[package]]
-name = "figcraft-format"
-version = "0.10.0"
-dependencies = [
- "figcraft-doc",
- "figcraft-pathops",
- "flate2",
- "image",
- "ruzstd",
- "serde",
- "serde_json",
- "sha2",
- "zip",
-]
-
-[[package]]
-name = "figcraft-geom"
-version = "0.10.0"
-dependencies = [
- "kurbo",
- "serde",
-]
-
-[[package]]
-name = "figcraft-layout"
-version = "0.10.0"
-dependencies = [
- "figcraft-doc",
- "figcraft-geom",
-]
-
-[[package]]
-name = "figcraft-mcp"
-version = "0.10.0"
-dependencies = [
- "base64 0.22.1",
- "figcraft-collab-net",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-geom",
- "figcraft-render",
- "image",
- "log",
- "proptest",
- "serde_json",
-]
-
-[[package]]
-name = "figcraft-pathops"
-version = "0.10.0"
-dependencies = [
- "figcraft-doc",
- "figcraft-geom",
- "linesweeper",
-]
-
-[[package]]
-name = "figcraft-pdf"
-version = "0.10.0"
-dependencies = [
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
- "flate2",
- "krilla",
- "log",
- "thiserror 2.0.21",
- "tiny-skia 0.12.0",
-]
-
-[[package]]
-name = "figcraft-plugin"
-version = "0.10.0"
-dependencies = [
- "figcraft-color",
- "serde",
- "serde_json",
- "sha2",
- "thiserror 2.0.21",
- "wasmi",
- "wat",
-]
-
-[[package]]
-name = "figcraft-render"
-version = "0.10.0"
-dependencies = [
- "crc32fast",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-text",
- "image",
- "log",
- "moxcms",
- "png",
- "rayon",
- "tiny-skia 0.12.0",
-]
-
-[[package]]
-name = "figcraft-server"
-version = "0.10.0"
-dependencies = [
- "crc32fast",
- "ctrlc",
- "env_logger",
- "figcraft-collab",
- "figcraft-collab-net",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-plugin",
- "log",
- "rustix 1.1.5",
- "serde",
- "serde_json",
- "sha2",
- "toml",
- "tungstenite",
- "wat",
- "zip",
-]
-
-[[package]]
-name = "figcraft-svg"
-version = "0.10.0"
-dependencies = [
- "base64 0.22.1",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-geom",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
- "flate2",
- "thiserror 2.0.21",
- "usvg",
-]
-
-[[package]]
-name = "figcraft-text"
-version = "0.10.0"
-dependencies = [
- "figcraft-doc",
- "figcraft-geom",
- "harfrust 0.13.3",
- "log",
- "png",
- "skrifa 0.47.0",
- "unicode-bidi",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "figcraft-ui-egui"
-version = "0.10.0"
-dependencies = [
- "base64 0.22.1",
- "chrono",
- "egui",
- "egui_extras",
- "figcraft-color",
- "figcraft-doc",
- "figcraft-engine",
- "figcraft-format",
- "figcraft-geom",
- "figcraft-layout",
- "figcraft-pathops",
- "figcraft-render",
- "figcraft-text",
- "image",
- "log",
- "serde",
- "serde_json",
- "toml",
- "wat",
- "web-time",
-]
-
-[[package]]
-name = "figcraft-web"
-version = "0.10.0"
-dependencies = [
- "eframe",
- "egui",
- "figcraft-collab-net",
- "figcraft-engine",
- "figcraft-ui-egui",
- "js-sys",
- "log",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
 
 [[package]]
 name = "find-msvc-tools"
@@ -5883,7 +5883,7 @@ checksum = "9440ea3e5aeabb0ac63af70daf835274065238cdd0cec83418f417eae38bacee"
 name = "xtask"
 version = "0.10.0"
 dependencies = [
- "figcraft-engine",
+ "designbox-engine",
  "serde_json",
 ]
 

@@ -7,10 +7,10 @@ use std::net::TcpStream;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use figcraft_collab::message::{self, ClientMsg, Presence, ServerMsg};
-use figcraft_collab::{Client, Limits, Outgoing, Server};
-use figcraft_doc::{Document, NodeId};
-use figcraft_engine::live::{Event, Status, TOO_LARGE_TO_JOIN};
+use designbox_collab::message::{self, ClientMsg, Presence, ServerMsg};
+use designbox_collab::{Client, Limits, Outgoing, Server};
+use designbox_doc::{Document, NodeId};
+use designbox_engine::live::{Event, Status, TOO_LARGE_TO_JOIN};
 use tungstenite::protocol::WebSocket;
 use tungstenite::{Bytes, Message};
 

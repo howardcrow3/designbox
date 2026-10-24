@@ -3,7 +3,7 @@
 //! window buttons; the window's edges resize it.
 
 use egui::{Align2, Color32, CornerRadius, Rect, Sense, Stroke, Ui, pos2, vec2};
-use figcraft_doc::NodeId;
+use designbox_doc::NodeId;
 use serde_json::json;
 
 use crate::a11y::Tip;

@@ -1,0 +1,51 @@
+# Flatpak manifest for the single-file bundle attached to every GitHub release
+# (designbox-<version>-linux-<arch>.flatpak). Build it with packaging/linux/flatpak-bundle.sh.
+#
+# It repackages the release's own Linux tarball (designbox-<version>-linux-<arch>.tar.gz,
+# built on Ubuntu 22.04 by package.sh) instead of compiling Rust inside flatpak-builder: no
+# network and no vendored crate sources during the build, a few seconds instead of 20+ minutes,
+# and byte-for-byte the same binaries as the AppImage/deb/rpm. The script unpacks the tarball
+# into `stage/` next to a copy of this file. The binaries need glibc >= 2.35 and load X11,
+# Wayland, xkbcommon and Vulkan at runtime; the freedesktop runtime has all of them, and the
+# GPU driver comes from its org.freedesktop.Platform.GL extension.
+#
+# studio.turtlebox.designbox.yml (same directory) is the from-source manifest for Flathub. Keep
+# runtime-version and finish-args identical in both (packaging-lint checks this).
+id: studio.turtlebox.designbox
+runtime: org.freedesktop.Platform
+runtime-version: '26.08'
+sdk: org.freedesktop.Sdk
+command: designbox
+finish-args:
+  # Display: Wayland first; X11 only when no Wayland compositor is running.
+  - --socket=wayland
+  - --socket=fallback-x11
+  # X11 shared memory (MIT-SHM). Without it the X11 fallback is slow or fails.
+  - --share=ipc
+  # GPU access for the wgpu renderer (Vulkan, or GL as a fallback).
+  - --device=dri
+  # Open/Save dialogs go through the file-chooser portal (rfd's xdg-portal backend) and
+  # drag-and-drop through the document portal, so picked files work anywhere without broad
+  # filesystem access. Pictures and Documents are granted so files passed by path (the command
+  # line, Open Recent, "Save" next to the original) work in the usual places.
+  - --filesystem=xdg-pictures
+  - --filesystem=xdg-documents
+  # Deliberately not granted: network (the optional --control server listens on 127.0.0.1 in
+  # the sandbox; `flatpak override --user --share=network studio.turtlebox.designbox` exposes it to
+  # host agents) and home/host filesystem access.
+modules:
+  - name: designbox
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 bin/designbox /app/bin/designbox
+      # The headless CLI, in tarballs built with apps/designbox-cli.
+      - if [ -x bin/designbox-cli ]; then install -Dm755 bin/designbox-cli /app/bin/designbox-cli; fi
+      - install -Dm644 share/applications/studio.turtlebox.designbox.desktop /app/share/applications/studio.turtlebox.designbox.desktop
+      # .designbox; the runtime's shared-mime-info already knows SVG, PNG and JPEG.
+      - install -Dm644 share/mime/packages/studio.turtlebox.designbox.xml /app/share/mime/packages/studio.turtlebox.designbox.xml
+      # Already has the release's version and date substituted by package.sh.
+      - install -Dm644 share/metainfo/studio.turtlebox.designbox.metainfo.xml /app/share/metainfo/studio.turtlebox.designbox.metainfo.xml
+      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/designbox /app/share/doc/
+    sources:
+      - type: dir
+        path: stage

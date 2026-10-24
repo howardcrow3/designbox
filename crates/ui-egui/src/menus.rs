@@ -2,7 +2,7 @@
 //! Actions palette (⌘K / ⌘/).
 
 use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
-use figcraft_engine::catalog::{MENU, SEP};
+use designbox_engine::catalog::{MENU, SEP};
 use serde_json::json;
 
 use crate::FigApp;
@@ -38,7 +38,7 @@ pub const UI_COMMANDS: &[&str] = &[
 /// In Dev Mode only a comment's link pastes (it opens the thread); everything else would edit.
 pub fn paste(app: &mut FigApp, event_text: Option<&str>, at: Option<(f64, f64)>) {
     // Only HTML that holds readable design data takes this path; other HTML pastes as before.
-    if let Some(html) = app.services.clipboard_get_html().filter(|h| figcraft_engine::cmd::edit::design_clipboard_buffer(h).is_some()) {
+    if let Some(html) = app.services.clipboard_get_html().filter(|h| designbox_engine::cmd::edit::design_clipboard_buffer(h).is_some()) {
         if dev_mode_refuses(app, "edit.paste") {
             return;
         }
@@ -85,11 +85,11 @@ pub fn paste(app: &mut FigApp, event_text: Option<&str>, at: Option<(f64, f64)>)
 /// Paste text from another app at `(cx, cy)` (`center`: centred there): a comment's link opens its
 /// thread, SVG imports, anything else becomes a text layer.
 fn paste_text(app: &mut FigApp, text: &str, (cx, cy): (f64, f64), center: bool) {
-    if text.trim().starts_with("figcraft://comment/") {
+    if text.trim().starts_with("designbox://comment/") {
         app.run("comment.open", json!({"link": text.trim()}));
     } else if dev_mode_refuses(app, "edit.paste") {
         // Dev Mode: the note says why nothing was pasted.
-    } else if figcraft_engine::looks_like_svg(text) {
+    } else if designbox_engine::looks_like_svg(text) {
         use base64::Engine as _;
         let b64 = base64::engine::general_purpose::STANDARD.encode(text.as_bytes());
         app.run_user("file.import", json!({"data": b64, "name": "Pasted SVG.svg", "x": cx, "y": cy, "center": center}));
@@ -108,11 +108,11 @@ fn clipboard_png(app: &mut FigApp) -> Option<(Vec<u8>, u32, u32)> {
 }
 
 /// Dev Mode (the Inspect tab) refuses command `id` from the menus, shortcuts and clipboard: it
-/// edits the design ([`figcraft_engine::devinspect::dev_mode_allows`]). Says so when it does.
+/// edits the design ([`designbox_engine::devinspect::dev_mode_allows`]). Says so when it does.
 /// shortcut: the layers panel (rename, reorder, hide, lock) and files dropped on the canvas still
 /// edit in Dev Mode; route them through here if people trip over it.
 pub fn dev_mode_refuses(app: &mut FigApp, id: &str) -> bool {
-    let refused = app.ui.right_tab == crate::RightTab::Inspect && !figcraft_engine::devinspect::dev_mode_allows(id);
+    let refused = app.ui.right_tab == crate::RightTab::Inspect && !designbox_engine::devinspect::dev_mode_allows(id);
     if refused {
         app.toast(tr("Dev Mode only inspects: switch to Design (Shift+D) to edit"));
     }
@@ -136,7 +136,7 @@ pub fn record_recent(app: &mut FigApp, key: &str) {
     }
     r.retain(|k| k != key);
     r.insert(0, key.to_string());
-    r.truncate(figcraft_engine::MAX_RECENT_ACTIONS);
+    r.truncate(designbox_engine::MAX_RECENT_ACTIONS);
 }
 
 /// Run a menu, shortcut or palette action by id: actions that need the UI (dialogs, panels, the
@@ -183,14 +183,14 @@ pub fn invoke(app: &mut FigApp, id: &str) {
         "edit.copyAsCss" => {
             let ids = app.session.selection();
             if let (Some(first), Ok(doc)) = (ids.first(), app.session.doc()) {
-                let css = figcraft_engine::codegen::code_for(doc, *first, figcraft_engine::codegen::CodeLang::Css);
+                let css = designbox_engine::codegen::code_for(doc, *first, designbox_engine::codegen::CodeLang::Css);
                 app.services.clipboard_set_text(&css);
                 app.toast(tr("Copied as CSS"));
             }
         }
         "edit.copyAsSvg" => {
             let ids = app.session.selection();
-            if let Some(svg) = app.session.doc().ok().and_then(|d| figcraft_svg_export(d, &ids)) {
+            if let Some(svg) = app.session.doc().ok().and_then(|d| designbox_svg_export(d, &ids)) {
                 app.services.clipboard_set_text(&svg);
                 app.toast(tr("Copied as SVG"));
             }
@@ -198,11 +198,11 @@ pub fn invoke(app: &mut FigApp, id: &str) {
         "edit.copyAsPng" => {
             let ids = app.session.selection();
             if let Some((mut pix, profile)) =
-                app.session.doc().ok().and_then(|d| Some((figcraft_engine::cmd::file::copy_png(d, &ids)?, d.color_profile)))
+                app.session.doc().ok().and_then(|d| Some((designbox_engine::cmd::file::copy_png(d, &ids)?, d.color_profile)))
             {
                 // Clipboard images are read as sRGB.
-                figcraft_render::to_srgb(&mut pix, profile);
-                let rgba = figcraft_render::to_rgba8(&pix);
+                designbox_render::to_srgb(&mut pix, profile);
+                let rgba = designbox_render::to_rgba8(&pix);
                 app.services.clipboard_set_png(pix.width(), pix.height(), &rgba);
                 app.toast(tr("Copied as PNG"));
             }
@@ -220,7 +220,7 @@ pub fn invoke(app: &mut FigApp, id: &str) {
         }
         "edit.copyLink" => {
             let ids = app.session.selection();
-            app.services.clipboard_set_text(&format!("figcraft://node/{}", ids.first().map(|i| i.0).unwrap_or(0)));
+            app.services.clipboard_set_text(&format!("designbox://node/{}", ids.first().map(|i| i.0).unwrap_or(0)));
         }
         "edit.findReplace" => app.ui.find = Some((String::new(), String::new())),
         // The Actions palette invokes commands without parameters. These values are edited in
@@ -257,11 +257,11 @@ pub fn invoke(app: &mut FigApp, id: &str) {
             let ids = app.session.selection();
             // For other apps: text layers' text, other layers as SVG; taken before a cut removes them.
             let doc = app.session.doc().ok();
-            let mirror = doc.and_then(|d| text_layers_text(d, &ids).or_else(|| figcraft_svg_export(d, &ids)));
+            let mirror = doc.and_then(|d| text_layers_text(d, &ids).or_else(|| designbox_svg_export(d, &ids)));
             app.run(id, json!({}));
             // Mirror to the system clipboard (text or SVG, else a marker) and remember it, so a
             // later paste knows whether the clipboard still holds our layers.
-            let text = mirror.unwrap_or_else(|| format!("figcraft://clipboard/{}", ids.len()));
+            let text = mirror.unwrap_or_else(|| format!("designbox://clipboard/{}", ids.len()));
             app.services.clipboard_set_text(&text);
             app.ui.last_copy = Some(text);
         }
@@ -291,20 +291,20 @@ fn export_frames_pdf(app: &mut FigApp) {
 
 /// The text of a selection made only of text layers, one layer per line (None for any other
 /// selection, or when there is no text).
-fn text_layers_text(doc: &figcraft_doc::Document, ids: &[figcraft_doc::NodeId]) -> Option<String> {
+fn text_layers_text(doc: &designbox_doc::Document, ids: &[designbox_doc::NodeId]) -> Option<String> {
     let texts: Option<Vec<&str>> = ids.iter().map(|i| doc.node(*i).and_then(|n| n.kind.text()).map(|t| t.characters.as_str())).collect();
     texts.map(|t| t.join("\n")).filter(|t| !t.is_empty())
 }
 
 /// The layers as SVG text for other apps (None when the export fails).
-fn figcraft_svg_export(doc: &figcraft_doc::Document, ids: &[figcraft_doc::NodeId]) -> Option<String> {
-    let bytes = figcraft_engine::cmd::file::export_bytes(doc, ids, figcraft_doc::ExportFormat::Svg, 1.0).ok()?;
+fn designbox_svg_export(doc: &designbox_doc::Document, ids: &[designbox_doc::NodeId]) -> Option<String> {
+    let bytes = designbox_engine::cmd::file::export_bytes(doc, ids, designbox_doc::ExportFormat::Svg, 1.0).ok()?;
     String::from_utf8(bytes).ok()
 }
 
 /// Whether a menu id is available (registered in the engine or handled by the UI).
 pub fn available(id: &str) -> bool {
-    !id.is_empty() && (figcraft_engine::find_command(id).is_some() || UI_COMMANDS.contains(&id))
+    !id.is_empty() && (designbox_engine::find_command(id).is_some() || UI_COMMANDS.contains(&id))
 }
 
 /// Draw one level of the main menu: `prefix` is the menu path ("File", "Edit/Copy as").
@@ -335,7 +335,7 @@ fn menu_level(app: &mut FigApp, ui: &mut Ui, prefix: &str) -> bool {
             }
             // One window in the browser.
             let enabled = available(m.id) && !(m.id == "window.new" && ui.ctx().embed_viewports());
-            let checked = figcraft_engine::cmd::view::checked(&app.session, m.id).unwrap_or(false);
+            let checked = designbox_engine::cmd::view::checked(&app.session, m.id).unwrap_or(false);
             if item(ui, &i18n::menu_item(m.id, m.label), crate::shortcuts::shortcut(m.id).unwrap_or(""), enabled, checked, &t) && enabled {
                 clicked = Some(m.id);
             }
@@ -866,7 +866,7 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                     let secs: Vec<bool> = ids
                         .iter()
                         .filter_map(|i| doc.node(*i))
-                        .filter(|n| matches!(n.kind, figcraft_doc::NodeKind::Section { .. }))
+                        .filter(|n| matches!(n.kind, designbox_doc::NodeKind::Section { .. }))
                         .map(|n| n.hides_contents())
                         .collect();
                     (!secs.is_empty()).then(|| if secs.iter().all(|h| *h) { tr("Show section contents") } else { tr("Hide section contents") })
@@ -874,14 +874,14 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                 // Frames on the page (or in a section) convert to sections, and sections to frames.
                 let convert = app.session.doc().ok().and_then(|doc| {
                     let nodes: Vec<_> = ids.iter().filter_map(|i| doc.node(*i)).collect();
-                    let on_board = |n: &figcraft_doc::Node| {
-                        n.parent.and_then(|p| doc.node(p)).is_some_and(|p| p.is_page() || matches!(p.kind, figcraft_doc::NodeKind::Section { .. }))
+                    let on_board = |n: &designbox_doc::Node| {
+                        n.parent.and_then(|p| doc.node(p)).is_some_and(|p| p.is_page() || matches!(p.kind, designbox_doc::NodeKind::Section { .. }))
                     };
                     if nodes.is_empty() {
                         None
-                    } else if nodes.iter().all(|n| matches!(n.kind, figcraft_doc::NodeKind::Section { .. })) {
+                    } else if nodes.iter().all(|n| matches!(n.kind, designbox_doc::NodeKind::Section { .. })) {
                         Some((tr("Convert to frame"), "object.convertToFrame"))
-                    } else if nodes.iter().all(|n| matches!(n.kind, figcraft_doc::NodeKind::Frame) && on_board(n)) {
+                    } else if nodes.iter().all(|n| matches!(n.kind, designbox_doc::NodeKind::Frame) && on_board(n)) {
                         Some((tr("Convert to section"), "object.convertToSection"))
                     } else {
                         None
@@ -893,7 +893,7 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                     .session
                     .doc()
                     .ok()
-                    .filter(|doc| figcraft_engine::cmd::component::can_combine_variants(doc, &app.session.selection()))
+                    .filter(|doc| designbox_engine::cmd::component::can_combine_variants(doc, &app.session.selection()))
                     .map(|_| i18n::command("component.combineVariants", "Combine as variants"));
                 let mut entries: Vec<(&str, &str)> = if has_sel {
                     vec![
@@ -1010,8 +1010,8 @@ fn select_layer_menu(app: &mut FigApp, ui: &mut Ui, pos: egui::Pos2, t: &Tokens)
     let p = app.to_page(pos);
     let Ok(ds) = app.session.ds() else { return false };
     let tol = 2.0 / ds.view.zoom.max(1e-6);
-    let layers: Vec<(figcraft_doc::NodeId, usize, String)> =
-        figcraft_doc::geometry::layers_at(&ds.doc, ds.page, p, tol, Some(&figcraft_engine::booleans::result_outline(&ds.doc, &ds.selection)))
+    let layers: Vec<(designbox_doc::NodeId, usize, String)> =
+        designbox_doc::geometry::layers_at(&ds.doc, ds.page, p, tol, Some(&designbox_engine::booleans::result_outline(&ds.doc, &ds.selection)))
             .into_iter()
             .take(40)
             .filter_map(|(id, depth)| {
@@ -1295,7 +1295,7 @@ pub(crate) fn command_sections(q: &str) -> Vec<(String, Vec<ActionRow>)> {
         menu_of.entry(m.id).or_insert(m);
     }
     let menu_items = MENU.iter().filter(|m| m.label != SEP).map(|m| (m.id, m.label));
-    let engine = figcraft_engine::all_commands().iter().map(|c| (c.id, c.label));
+    let engine = designbox_engine::all_commands().iter().map(|c| (c.id, c.label));
     let candidates: Box<dyn Iterator<Item = (&str, &str)>> = if ql.is_empty() { Box::new(menu_items) } else { Box::new(menu_items.chain(engine)) };
     let mut seen = std::collections::HashSet::new();
     // By top-level menu; `None`: no menu lists it.
@@ -1383,13 +1383,13 @@ fn widget_rows(app: &FigApp, q: &str) -> Vec<ActionRow> {
 fn asset_sections(app: &FigApp, q: &str) -> Vec<(String, Vec<ActionRow>)> {
     let ql = q.to_lowercase();
     let Ok(doc) = app.session.doc() else { return Vec::new() };
-    let components: Vec<ActionRow> = figcraft_engine::library::local_components(doc)
+    let components: Vec<ActionRow> = designbox_engine::library::local_components(doc)
         .iter()
         .filter_map(|id| doc.node(*id))
         .filter(|n| matches(&ql, &n.name, ""))
         .map(|n| ActionRow { key: format!("component:{}", n.id.0), label: n.name.clone(), hint: tr("Component").to_string(), tile: None })
         .collect();
-    let styles: Vec<ActionRow> = figcraft_engine::library::local_styles(doc)
+    let styles: Vec<ActionRow> = designbox_engine::library::local_styles(doc)
         .filter(|s| matches(&ql, &s.name, ""))
         .map(|s| ActionRow { key: format!("style:{}", s.id), label: s.name.clone(), hint: tr("Style").to_string(), tile: None })
         .collect();
@@ -1407,8 +1407,8 @@ fn asset_sections(app: &FigApp, q: &str) -> Vec<(String, Vec<ActionRow>)> {
 pub(crate) fn recent_row(app: &FigApp, key: &str, q: &str) -> Option<ActionRow> {
     let ql = q.to_lowercase();
     if let Some(id) = key.strip_prefix("command:") {
-        let spec = figcraft_engine::find_command(id);
-        let menu_label = figcraft_engine::catalog::MENU.iter().find(|m| m.id == id);
+        let spec = designbox_engine::find_command(id);
+        let menu_label = designbox_engine::catalog::MENU.iter().find(|m| m.id == id);
         let english = menu_label.map(|m| m.label).or_else(|| spec.map(|s| s.label)).unwrap_or(id);
         let label = i18n::command(id, english);
         if !available(id) || !matches(&ql, &label, &format!("{english} {id}")) {

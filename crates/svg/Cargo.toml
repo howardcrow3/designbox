@@ -1,20 +1,20 @@
 [package]
-name = "figcraft-svg"
+name = "designbox-svg"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "FigCraft SVG export (shapes, gradients, images, strokes, effects as filters, text as outlines) and import (via usvg)"
+description = "DesignBox SVG export (shapes, gradients, images, strokes, effects as filters, text as outlines) and import (via usvg)"
 
 [lints]
 workspace = true
 
 [dependencies]
-figcraft-geom = { workspace = true }
-figcraft-color = { workspace = true }
-figcraft-doc = { workspace = true }
-figcraft-render = { workspace = true }
-figcraft-text = { workspace = true }
-figcraft-pathops = { workspace = true }
+designbox-geom = { workspace = true }
+designbox-color = { workspace = true }
+designbox-doc = { workspace = true }
+designbox-render = { workspace = true }
+designbox-text = { workspace = true }
+designbox-pathops = { workspace = true }
 usvg = { workspace = true }
 base64 = { workspace = true }
 flate2 = { workspace = true }

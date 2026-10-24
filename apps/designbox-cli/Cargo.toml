@@ -1,0 +1,24 @@
+[package]
+name = "designbox-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+description = "DesignBox command line: info, export, convert, render, scripted commands, MCP server, perf"
+
+[[bin]]
+name = "designbox-cli"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+designbox-engine = { workspace = true }
+designbox-doc = { workspace = true }
+designbox-render = { workspace = true }
+designbox-text = { workspace = true }
+designbox-svg = { workspace = true }
+designbox-format = { workspace = true }
+designbox-mcp = { workspace = true }
+serde_json = { workspace = true }

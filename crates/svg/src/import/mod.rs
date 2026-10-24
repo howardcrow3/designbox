@@ -37,9 +37,9 @@ mod structure_tests;
 
 use std::collections::{BTreeSet, HashSet};
 
-use figcraft_color::{BlendMode, ImageScaleMode, Paint};
-use figcraft_doc::{Document, Effect, MaskType, Node, NodeId, NodeKind, StrokeAlign, StrokeCap, StrokeJoin, VectorNetwork, WindingRule};
-use figcraft_geom::{Affine, BezPath, Point, Rect, Shape};
+use designbox_color::{BlendMode, ImageScaleMode, Paint};
+use designbox_doc::{Document, Effect, MaskType, Node, NodeId, NodeKind, StrokeAlign, StrokeCap, StrokeJoin, VectorNetwork, WindingRule};
+use designbox_geom::{Affine, BezPath, Point, Rect, Shape};
 
 use paint::Target;
 use shape::{Prim, length_scale, place};
@@ -301,10 +301,10 @@ fn clip_is_noop(c: &usvg::ClipPath, g: &usvg::Group, base: Affine) -> bool {
     if radius > 0.0 || b.abs() > 1e-9 || cc.abs() > 1e-9 {
         return false;
     }
-    let clip = figcraft_geom::transform_rect_bbox(cw, rect).inflate(0.01, 0.01);
+    let clip = designbox_geom::transform_rect_bbox(cw, rect).inflate(0.01, 0.01);
     let r = g.abs_stroke_bounding_box();
     let content =
-        figcraft_geom::transform_rect_bbox(base, Rect::new(f64::from(r.left()), f64::from(r.top()), f64::from(r.right()), f64::from(r.bottom())));
+        designbox_geom::transform_rect_bbox(base, Rect::new(f64::from(r.left()), f64::from(r.top()), f64::from(r.right()), f64::from(r.bottom())));
     clip.contains(Point::new(content.x0, content.y0)) && clip.contains(Point::new(content.x1, content.y1))
 }
 
@@ -433,7 +433,7 @@ fn paint_path(cx: &mut Ctx, p: &usvg::Path, mut n: Node, transform: Affine, worl
         n.strokes = paint::paint(cx, s.paint(), s.opacity().get(), target).into_iter().collect();
         n.stroke = stroke_props(s, length_scale(world));
         // A stroke painted under the fill shows only its outer half.
-        if p.paint_order() == usvg::PaintOrder::StrokeAndFill && !n.fills.is_empty() && figcraft_doc::geometry::is_closed(&n) {
+        if p.paint_order() == usvg::PaintOrder::StrokeAndFill && !n.fills.is_empty() && designbox_doc::geometry::is_closed(&n) {
             n.stroke.align = StrokeAlign::Outside;
             n.stroke.weight /= 2.0;
         }
@@ -449,7 +449,7 @@ const CLOSE_TOLERANCE: f64 = 1e-3;
 /// (SVG fills every subpath as if closed), every other subpath that can enclose an area (two or
 /// more segments, or one curve) closed with a straight segment.
 fn closed_for_fill(path: &BezPath, tol: f64, all: bool) -> BezPath {
-    use figcraft_geom::kurbo::PathEl;
+    use designbox_geom::kurbo::PathEl;
     let mut out = BezPath::new();
     let mut sub: Vec<PathEl> = Vec::new();
     let flush = |sub: &mut Vec<PathEl>, out: &mut BezPath| {
@@ -514,7 +514,7 @@ fn primitive(prim: Prim, world: Affine) -> Option<(NodeKind, Affine, f64, f64, f
     }
 }
 
-pub(crate) fn stroke_props(s: &usvg::Stroke, k: f64) -> figcraft_doc::StrokeProps {
+pub(crate) fn stroke_props(s: &usvg::Stroke, k: f64) -> designbox_doc::StrokeProps {
     let cap = match s.linecap() {
         usvg::LineCap::Round => StrokeCap::Round,
         usvg::LineCap::Square => StrokeCap::Square,
@@ -524,7 +524,7 @@ pub(crate) fn stroke_props(s: &usvg::Stroke, k: f64) -> figcraft_doc::StrokeProp
     if !dashes.is_empty() {
         dashes = dash_offset(&dashes, f64::from(s.dashoffset()) * k, cap == StrokeCap::None).unwrap_or(dashes);
     }
-    figcraft_doc::StrokeProps {
+    designbox_doc::StrokeProps {
         weight: f64::from(s.width().get()) * k,
         align: StrokeAlign::Center,
         cap_start: cap,
@@ -604,7 +604,7 @@ fn image(cx: &mut Ctx, img: &usvg::Image, id: &str, parent: NodeId, base: Affine
 /// Store image `bytes` (`w × h` pixels) in `doc`; returns its key.
 pub(crate) fn add_image(doc: &mut Document, bytes: std::sync::Arc<Vec<u8>>, w: f64, h: f64) -> String {
     let hash = simple_hash(&bytes);
-    doc.images.insert(hash.clone(), figcraft_doc::ImageData { bytes, width: w.round().max(1.0) as u32, height: h.round().max(1.0) as u32 });
+    doc.images.insert(hash.clone(), designbox_doc::ImageData { bytes, width: w.round().max(1.0) as u32, height: h.round().max(1.0) as u32 });
     hash
 }
 

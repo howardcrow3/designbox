@@ -3,7 +3,7 @@
 
 use std::io::Write;
 
-use figcraft_doc::{Document, NodeKind};
+use designbox_doc::{Document, NodeKind};
 
 use super::*;
 

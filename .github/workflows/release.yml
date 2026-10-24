@@ -22,8 +22,8 @@ jobs:
     # Intentionally tracked at @main (not SHA-pinned) so org-wide CI improvements, security fixes, and build optimizations propagate without PR churn across all craftapp repos.
     uses: storytold/craft-common-actions/.github/workflows/release.yml@main
     with:
-      app-name: figcraft
-      app-title: FigCraft
+      app-name: designbox
+      app-title: DesignBox
       # Needs fonts/latin-manifest.txt (Inter): crates/text/build.rs fails a release without it. Only
       # craft-fonts' pr/latin-presentation-fonts has it; its main has Noto Sans Georgian but no Inter.
       # Re-pin once one commit has both (storytold/craft-fonts#42).

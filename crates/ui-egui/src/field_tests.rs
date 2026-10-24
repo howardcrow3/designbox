@@ -6,8 +6,8 @@
 
 use egui::accesskit::Role;
 use egui::{Event, Id, Key, Modifiers, Pos2, pos2};
-use figcraft_doc::NodeId;
-use figcraft_engine::Session;
+use designbox_doc::NodeId;
+use designbox_engine::Session;
 use serde_json::json;
 
 use crate::a11y::focused_name;
@@ -267,7 +267,7 @@ fn scrubbing_the_label_moves_the_value_and_is_one_undo_step() {
     scrub(&mut u, "Opacity", -30.0, Modifiers::NONE);
     assert_eq!(u.app.session.doc().unwrap().node(a).unwrap().opacity, 0.7);
     scrub(&mut u, "Rotation", 15.0, Modifiers::NONE);
-    let rot = figcraft_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
+    let rot = designbox_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
     assert!((rot.abs() - 15.0).abs() < 1e-6, "rotation {rot}");
     // A press on the label that doesn't move changes nothing.
     let before = (geom(&u, a), undo_steps(&u));
@@ -313,7 +313,7 @@ fn the_arrow_keys_step_by_the_nudge_amounts_and_fractional_fields_by_their_own()
     key(&mut u, Key::ArrowUp, Modifiers::NONE);
     key(&mut u, Key::ArrowUp, shift);
     key(&mut u, Key::Escape, Modifiers::NONE);
-    let rot = figcraft_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
+    let rot = designbox_geom::rotation_degrees(u.app.session.doc().unwrap().node(a).unwrap().transform);
     assert!((rot.abs() - 11.0).abs() < 1e-6, "rotation {rot}: the steps stay after Escape");
 }
 
@@ -397,9 +397,9 @@ fn the_save_shortcut_saves_from_a_field_with_what_was_typed() {
     // Shift+Cmd/Ctrl+S does the same through Save as.
     let cmd = if cfg!(target_os = "macos") { Modifiers::COMMAND } else { Modifiers::COMMAND.plus(Modifiers::CTRL) };
     let (mut u, a, _) = setup();
-    let dir = std::env::temp_dir().join(format!("figcraft-save-from-field-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("designbox-save-from-field-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
-    let (path, copy) = (dir.join("doc.figcraft"), dir.join("copy.figcraft"));
+    let (path, copy) = (dir.join("doc.designbox"), dir.join("copy.designbox"));
     u.app.session.execute("file.saveAs", &json!({"path": path.to_string_lossy()})).unwrap();
     let asked = std::rc::Rc::new(std::cell::Cell::new(0));
     u.app.services = Box::new(SaveAsPicker { path: Some(copy.clone()), asked: asked.clone() });
@@ -508,7 +508,7 @@ fn scrubbing_a_prototype_delay_sets_it_once_when_let_go() {
     let from = lead(&u, Id::new(("proto_delay", f1, 0usize)));
     drag(&mut u, from, 30.0, Modifiers::NONE);
     let ms = match u.app.session.doc().unwrap().node(f1).unwrap().interactions[0].trigger {
-        figcraft_doc::proto::Trigger::AfterDelay { ms } => ms,
+        designbox_doc::proto::Trigger::AfterDelay { ms } => ms,
         _ => panic!("still after a delay"),
     };
     assert_eq!((ms, undo_steps(&u)), (800, steps + 1));

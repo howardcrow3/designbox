@@ -1,16 +1,21 @@
-FigCraft
-Copyright (c) 2026 ArtCraft Team and the FigCraft contributors.
-Licensed under the MIT License or the Apache License, Version 2.0, at your option
-(LICENSE-MIT, LICENSE-APACHE).
+DesignBox
+Copyright (c) 2026 the DesignBox contributors.
 
-The ArtCraft name, wordmark and logos in docs/brand/ are trademarks of the ArtCraft Team. They are
-not open source and are not covered by the license above; their terms are in
-docs/brand/LICENSE-brand.txt.
+DesignBox is a rebranded fork of FigCraft (https://github.com/storytold/figcraft),
+Copyright (c) 2026 ArtCraft Team and the FigCraft contributors, imported without upstream history.
+
+Licensed under the MIT License or the Apache License, Version 2.0, at your option
+(LICENSE-MIT, LICENSE-APACHE). The original copyright notice is retained as those licenses require.
+
+The DesignBox name and the High Turtle logo and icon (docs/brand/, assets/app-icon/) are the project
+owner's brand assets. They are not open source and are not covered by the license above; their terms
+are in assets/app-icon/LICENSE.txt. The ArtCraft and FigCraft names and logos are not part of this
+project.
 
 Third-party material
 
 This product bundles no third-party fonts, icons or images in the repository: every icon is
-drawn in code and original to FigCraft. The per-file list (author, source, license) of any bundled
+drawn in code and original to FigCraft and DesignBox. The per-file list (author, source, license) of any bundled
 asset is in ATTRIBUTION.md.
 
 Release builds made with the optional craft-fonts build input (CRAFT_FONTS_DIR) embed the fonts

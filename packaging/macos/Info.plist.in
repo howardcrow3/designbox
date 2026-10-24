@@ -7,13 +7,13 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleDisplayName</key>
-  <string>FigCraft</string>
+  <string>DesignBox</string>
   <key>CFBundleName</key>
-  <string>FigCraft</string>
+  <string>DesignBox</string>
   <key>CFBundleExecutable</key>
-  <string>FigCraft</string>
+  <string>DesignBox</string>
   <key>CFBundleIdentifier</key>
-  <string>ai.storyteller.figcraft</string>
+  <string>studio.turtlebox.designbox</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundlePackageType</key>
@@ -24,12 +24,12 @@
   <string>@SHORT_VERSION@</string>
   <key>CFBundleVersion</key>
   <string>@SHORT_VERSION@</string>
-  <key>FigCraftVersion</key>
+  <key>DesignBoxVersion</key>
   <string>@VERSION@</string>
-  <key>FigCraftBuildCommit</key>
+  <key>DesignBoxBuildCommit</key>
   <string>@BUILD_SHA@</string>
   <key>CFBundleIconFile</key>
-  <string>FigCraft</string>
+  <string>DesignBox</string>
   <key>LSApplicationCategoryType</key>
   <string>public.app-category.graphics-design</string>
   <!-- Must match MACOSX_DEPLOYMENT_TARGET in package.sh. Big Sur is the first release on
@@ -43,43 +43,43 @@
   <key>NSRequiresAquaSystemAppearance</key>
   <false/>
   <key>NSHumanReadableCopyright</key>
-  <string>Copyright © the FigCraft authors. MIT OR Apache-2.0.</string>
+  <string>Copyright © the DesignBox authors. MIT OR Apache-2.0.</string>
 
-  <!-- FigCraft's own format. -->
+  <!-- DesignBox's own format. -->
   <key>UTExportedTypeDeclarations</key>
   <array>
     <dict>
       <key>UTTypeIdentifier</key>
-      <string>ai.storyteller.figcraft.document</string>
+      <string>studio.turtlebox.designbox.document</string>
       <key>UTTypeDescription</key>
-      <string>FigCraft Document</string>
+      <string>DesignBox Document</string>
       <key>UTTypeConformsTo</key>
       <array>
         <string>public.data</string>
         <string>public.content</string>
       </array>
       <key>UTTypeIconFile</key>
-      <string>FigCraft</string>
+      <string>DesignBox</string>
       <key>UTTypeTagSpecification</key>
       <dict>
         <key>public.filename-extension</key>
-        <array><string>figcraft</string></array>
+        <array><string>designbox</string></array>
         <key>public.mime-type</key>
-        <array><string>application/x-figcraft</string></array>
+        <array><string>application/x-designbox</string></array>
       </dict>
     </dict>
   </array>
 
-  <!-- figcraft://join?... live session invite links open FigCraft. -->
+  <!-- designbox://join?... live session invite links open DesignBox. -->
   <key>CFBundleURLTypes</key>
   <array>
     <dict>
       <key>CFBundleURLName</key>
-      <string>ai.storyteller.figcraft.invite</string>
+      <string>studio.turtlebox.designbox.invite</string>
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLSchemes</key>
-      <array><string>figcraft</string></array>
+      <array><string>designbox</string></array>
     </dict>
   </array>
 
@@ -87,15 +87,15 @@
   <array>
     <dict>
       <key>CFBundleTypeName</key>
-      <string>FigCraft Document</string>
+      <string>DesignBox Document</string>
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>LSHandlerRank</key>
       <string>Owner</string>
       <key>CFBundleTypeIconFile</key>
-      <string>FigCraft</string>
+      <string>DesignBox</string>
       <key>LSItemContentTypes</key>
-      <array><string>ai.storyteller.figcraft.document</string></array>
+      <array><string>studio.turtlebox.designbox.document</string></array>
     </dict>
     <!-- Offered under "Open With", never forced as the default. -->
     <dict>

@@ -2,8 +2,8 @@
 //! and free points, connectors inside moving sections, styles and labels with their refusals, and
 //! the shape, stamp, highlighter and connector tools with double-clicks.
 
-use figcraft_doc::{BoardItem, BoardShape, End, NodeId, Side, Stamp, StrokeCap, board_color};
-use figcraft_geom::Point;
+use designbox_doc::{BoardItem, BoardShape, End, NodeId, Side, Stamp, StrokeCap, board_color};
+use designbox_geom::Point;
 use serde_json::json;
 
 use crate::Session;
@@ -12,7 +12,7 @@ use crate::board_tests::{board, connector, drawn, id, near, node};
 use crate::tools::{PointerEvent, PointerKind, ToolId};
 
 /// The connector among `ids`, if any.
-fn connector_in(s: &Session, ids: &[NodeId]) -> Option<figcraft_doc::Connector> {
+fn connector_in(s: &Session, ids: &[NodeId]) -> Option<designbox_doc::Connector> {
     let doc = s.doc().ok()?;
     ids.iter().find_map(|i| match &doc.node(*i)?.board {
         Some(BoardItem::Connector(k)) => Some(*k),
@@ -96,7 +96,7 @@ fn routes_take_named_sides_and_free_points() {
     let a = id(&s.execute("board.shape", &json!({"x": 0, "y": 0, "width": 100, "height": 100})).unwrap(), "id");
     let b = id(&s.execute("board.shape", &json!({"x": 300, "y": 300, "width": 100, "height": 100})).unwrap(), "id");
     let doc = s.doc().unwrap();
-    let elbow = |from, to| route(doc, &figcraft_doc::Connector { from, to, routing: figcraft_doc::Routing::Elbow }).unwrap();
+    let elbow = |from, to| route(doc, &designbox_doc::Connector { from, to, routing: designbox_doc::Routing::Elbow }).unwrap();
     let side = |n, side| End::Node { node: n, side };
     let p = |x, y| End::Point { x, y };
     let pt = Point::new;
@@ -109,7 +109,7 @@ fn routes_take_named_sides_and_free_points() {
     assert_eq!(elbow(p(0.0, 0.0), p(100.0, 40.0)), vec![pt(0.0, 0.0), pt(50.0, 0.0), pt(50.0, 40.0), pt(100.0, 40.0)]);
     assert_eq!(elbow(p(0.0, 0.0), p(100.0, 0.0)), vec![pt(0.0, 0.0), pt(100.0, 0.0)]);
     // An automatic side faces the other end.
-    let straight = route(doc, &figcraft_doc::Connector { from: side(a, Side::Auto), to: p(50.0, 500.0), routing: figcraft_doc::Routing::Straight });
+    let straight = route(doc, &designbox_doc::Connector { from: side(a, Side::Auto), to: p(50.0, 500.0), routing: designbox_doc::Routing::Straight });
     assert_eq!(straight.unwrap(), vec![pt(50.0, 100.0), pt(50.0, 500.0)]);
     assert_eq!(Side::from_id("TOP"), Some(Side::Top));
     assert_eq!(Side::from_id("inside"), None);

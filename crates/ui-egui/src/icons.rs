@@ -1,4 +1,4 @@
-//! FigCraft's icon set, drawn in code from simple primitives on a 16×16 grid. Original artwork
+//! DesignBox's icon set, drawn in code from simple primitives on a 16×16 grid. Original artwork
 //! (MIT OR Apache-2.0): no third-party icons are used anywhere.
 //!
 //! The grid is pixel-exact at 16 px: 1-unit strokes sit on half coordinates (pixel centres) and
@@ -1181,16 +1181,16 @@ fn draw(p: &P, icon: Icon) {
             p.poly(&[(5.0, 8.3), (7.2, 10.5), (11.0, 6.0)], false);
         }
         Logo => {
-            // FigCraft's own mark: the curled tail of the chameleon on the app icon. One bold
-            // stroke: a shaft along the bottom, then three half turns, each tighter than the last.
-            let mut tail = vec![(13.75, 13.0)];
-            tail.extend(arc_pts(7.25, 8.0, 5.0, FRAC_PI_2, 3.0 * FRAC_PI_2));
-            tail.extend(arc_pts(7.25, 6.5, 3.5, 3.0 * FRAC_PI_2, 5.0 * FRAC_PI_2));
-            tail.extend(arc_pts(7.25, 8.25, 1.75, FRAC_PI_2, 3.0 * FRAC_PI_2));
-            let v: Vec<Pos2> = tail.iter().map(|&(x, y)| p.raw(x, y)).collect();
-            p.painter.add(Shape::line(v, Stroke::new(1.7 * p.s, p.color)));
-            p.dot(13.75, 13.0, 0.85);
-            p.dot(7.25, 6.5, 0.85);
+            // DesignBox's own mark: a small turtle in profile, after the High Turtle app icon. A domed
+            // shell closed along the bottom, a round head on the right, two legs and a tail.
+            let mut shell: Vec<(f32, f32)> = arc_pts(7.0, 10.5, 5.0, std::f32::consts::PI, 2.0 * std::f32::consts::PI).collect();
+            shell.push((2.0, 10.5));
+            p.poly(&shell, true);
+            p.circle(13.3, 8.8, 1.5);
+            p.line(4.5, 10.5, 4.5, 13.5);
+            p.line(9.5, 10.5, 9.5, 13.5);
+            p.line(2.0, 10.5, 1.0, 11.6);
+            p.dot(13.7, 8.4, 0.5);
         }
     }
 }
@@ -1226,17 +1226,17 @@ pub fn button(ui: &mut egui::Ui, icon: Icon, size: f32, active: bool, tooltip: &
 
 /// The mark of a file of `kind` on tabs and file rows: a pen nib for design files, a sticky note
 /// for boards.
-pub fn file_mark(kind: figcraft_doc::FileKind) -> Icon {
+pub fn file_mark(kind: designbox_doc::FileKind) -> Icon {
     match kind {
-        figcraft_doc::FileKind::Design => Icon::PenNib,
-        figcraft_doc::FileKind::Board => Icon::Board,
+        designbox_doc::FileKind::Design => Icon::PenNib,
+        designbox_doc::FileKind::Board => Icon::Board,
     }
 }
 
 /// SVG path data outlines on a `size`-unit box, painted into `rect`: each part filled, or
 /// stroked `width` box units wide. Board shapes and stamp marks are drawn this way in the UI from
 /// the same outlines the canvas has.
-pub fn paint_outlines(painter: &Painter, rect: Rect, size: f64, parts: &[(&figcraft_geom::BezPath, bool)], color: Color32, width: f32) {
+pub fn paint_outlines(painter: &Painter, rect: Rect, size: f64, parts: &[(&designbox_geom::BezPath, bool)], color: Color32, width: f32) {
     let s = rect.width().min(rect.height()) / size as f32;
     let px = 1.0 / painter.ctx().pixels_per_point();
     let o = rect.center() - Vec2::splat(size as f32 * s / 2.0);
@@ -1250,14 +1250,14 @@ pub fn paint_outlines(painter: &Painter, rect: Rect, size: f64, parts: &[(&figcr
             sub.clear();
         };
         let mut closed = false;
-        figcraft_geom::kurbo::flatten(path.iter(), 0.25, |el| match el {
-            figcraft_geom::kurbo::PathEl::MoveTo(q) => {
+        designbox_geom::kurbo::flatten(path.iter(), 0.25, |el| match el {
+            designbox_geom::kurbo::PathEl::MoveTo(q) => {
                 flush(&mut sub, closed);
                 closed = false;
                 sub.push((q.x as f32, q.y as f32));
             }
-            figcraft_geom::kurbo::PathEl::LineTo(q) => sub.push((q.x as f32, q.y as f32)),
-            figcraft_geom::kurbo::PathEl::ClosePath => closed = true,
+            designbox_geom::kurbo::PathEl::LineTo(q) => sub.push((q.x as f32, q.y as f32)),
+            designbox_geom::kurbo::PathEl::ClosePath => closed = true,
             _ => {}
         });
         flush(&mut sub, closed);
@@ -1359,7 +1359,7 @@ mod tests {
     /// The Design panel's Rotation field shows an icon of its own, not Corner radius's (#256).
     #[test]
     fn rotation_and_corner_radius_fields_show_different_icons() {
-        let mut s = figcraft_engine::Session::new();
+        let mut s = designbox_engine::Session::new();
         let r = s.execute("shape.rectangle", &serde_json::json!({"x": 0, "y": 0, "width": 100, "height": 80})).unwrap()["id"].clone();
         s.execute("select.set", &serde_json::json!({"ids": [r]})).unwrap();
         let mut u = crate::layers_drag_tests::Ui::new(s);

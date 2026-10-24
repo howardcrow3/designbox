@@ -1,19 +1,19 @@
-# figcraft-cli
+# designbox-cli
 
-FigCraft without a window: inspect, export, convert and render documents, run command scripts, list
+DesignBox without a window: inspect, export, convert and render documents, run command scripts, list
 commands, serve MCP and measure performance. Build it with
-`cargo build --release -p figcraft-cli` (binary `target/release/figcraft-cli`).
+`cargo build --release -p designbox-cli` (binary `target/release/designbox-cli`).
 
-`figcraft-cli --help` (or `-h`, or `help`) prints usage on stdout and exits with 0, and so does
-`--help` or `-h` after a subcommand (`figcraft-cli mcp --help`). Bad arguments print usage and exit
+`designbox-cli --help` (or `-h`, or `help`) prints usage on stdout and exits with 0, and so does
+`--help` or `-h` after a subcommand (`designbox-cli mcp --help`). Bad arguments print usage and exit
 with code 2; failures exit with 1. The CLI never panics on input.
 
 ## Fonts
 
-Text lays out and renders with the same fonts as the desktop app: the fonts built into FigCraft
+Text lays out and renders with the same fonts as the desktop app: the fonts built into DesignBox
 plus the installed system fonts. The system fonts are indexed once per run, the first time text is
 laid out (about 60 ms warm on a Windows machine with ~900 font files; a run without text skips it).
-Every subcommand takes `--no-system-fonts` (or set `FIGCRAFT_NO_SYSTEM_FONTS=1`, which the desktop
+Every subcommand takes `--no-system-fonts` (or set `DESIGNBOX_NO_SYSTEM_FONTS=1`, which the desktop
 app honours too) to use only the built-in fonts, for renders that come out the same on every
 machine, e.g. in CI.
 
@@ -21,8 +21,8 @@ On Linux and other Unix systems except macOS, user fonts are read from
 `$XDG_DATA_HOME/fonts`, or `$HOME/.local/share/fonts` when `XDG_DATA_HOME` is unset,
 empty or relative. The legacy `$HOME/.fonts` directory is also scanned.
 
-The collaboration server is a binary of its own, `figcraft-server` (`cargo build --release -p
-figcraft-server`): it keeps files with share links and serves their live sessions, and its
+The collaboration server is a binary of its own, `designbox-server` (`cargo build --release -p
+designbox-server`): it keeps files with share links and serves their live sessions, and its
 `key`, `files`, `links`, `reports`, `block-ip` and `check` subcommands manage them (a server can
 be open to the public: [server.md](server.md#running-a-public-server)). See [server.md](server.md).
 
@@ -42,8 +42,8 @@ grey placeholder. `.fig` files are read the same way (best effort, images from t
 `info` lists what wasn't imported as `note:` lines.
 
 ```text
-$ figcraft-cli info app.figcraft
-app.figcraft — App (412 nodes, 6 styles, 12 variables, 3 images)
+$ designbox-cli info app.designbox
+app.designbox — App (412 nodes, 6 styles, 12 variables, 3 images)
 page 1 "Screens": 380 nodes, 4 top-level
   2 FRAME "Home" 393.0×852.0
   …
@@ -61,7 +61,7 @@ page 1 "Screens": 380 nodes, 4 top-level
 - `--node` takes a layer id (`12` or `0:12`) or a layer name.
 - `--format fig` (or an `<out>` ending in `.fig`) writes the whole file as `.fig`, experimental:
   written from public format notes, including variables with their modes and bindings and shared
-  styles with their layer links. Checked by opening it again in FigCraft and, on the example
+  styles with their layer links. Checked by opening it again in DesignBox and, on the example
   documents and small test files, in other software; other apps may not open every file. What was
   left out (comments, Dev Mode data, some bindings and settings…) is printed as `note:` lines;
   `docs/file-format-parity.md` lists what was checked and what is unchecked.
@@ -80,21 +80,21 @@ page 1 "Screens": 380 nodes, 4 top-level
   outside the bleed; the page boxes are set (MediaBox the sheet, BleedBox, TrimBox the frame).
   `--cmyk` writes CMYK colour, images included, converted from sRGB with the naive formula
   `K = 1 − max(R, G, B)`, `C = (1 − R − K) / (1 − K)` (M and Y alike): DeviceCMYK without an
-  output intent (no CMYK profile ships with FigCraft), so proof against your printer's profile.
+  output intent (no CMYK profile ships with DesignBox), so proof against your printer's profile.
 
 ```sh
-figcraft-cli export app.figcraft -o exports/ --scale 2
-figcraft-cli export app.figcraft -o hero.svg --node "Hero"
-figcraft-cli export app.figcraft -o screens.pdf --page "Screens"
-figcraft-cli export app.figcraft -o poster.pdf --node "Poster" --bleed 3mm --crop-marks --cmyk
-figcraft-cli export app.figcraft -o handoff.fig
+designbox-cli export app.designbox -o exports/ --scale 2
+designbox-cli export app.designbox -o hero.svg --node "Hero"
+designbox-cli export app.designbox -o screens.pdf --page "Screens"
+designbox-cli export app.designbox -o poster.pdf --node "Poster" --bleed 3mm --crop-marks --cmyk
+designbox-cli export app.designbox -o handoff.fig
 ```
 
 ### `convert <in> <out>`
 
-By extension. Inputs: `.figcraft`, `.json` (FigCraft or REST API file JSON), `.fig` (best effort), `.svg` (an editable frame: groups,
+By extension. Inputs: `.designbox`, `.json` (DesignBox or REST API file JSON), `.fig` (best effort), `.svg` (an editable frame: groups,
 shapes, text, gradients, masks and effects; `info` lists what it left out as `note:` lines), `.png/.jpg/.webp/.gif/.tif/.bmp`
-(an image layer). Outputs: `.figcraft`, `.json` (FigCraft JSON, pretty-printed), `.svg`,
+(an image layer). Outputs: `.designbox`, `.json` (DesignBox JSON, pretty-printed), `.svg`,
 `.png/.jpg/.webp` (the current page rendered at 1x with its background), `.pdf` (the current page's
 frames, one page each), `.fig` (the whole file, experimental, as `export --format fig`).
 
@@ -155,8 +155,8 @@ them and `file.newFromTemplate` opens one as the document the following steps (a
 
 ```sh
 echo '[{"command": "file.newFromTemplate", "params": {"template": "dashboard"}}]' > start.json
-figcraft-cli run start.json --out dashboard.figcraft
-figcraft-cli export dashboard.figcraft -o dashboard.png
+designbox-cli run start.json --out dashboard.designbox
+designbox-cli export dashboard.designbox -o dashboard.png
 ```
 
 ### Confining a run: `--automation-read-root DIR` / `--automation-write-root DIR`
@@ -169,11 +169,11 @@ is refused — so a run given only a read root cannot write at all. Without eith
 reads and writes as the user who started it.
 
 ```sh
-# Renders in/doc.figcraft to out/ok.png and can touch nothing else.
-figcraft-cli render in/doc.figcraft -o out/ok.png \
+# Renders in/doc.designbox to out/ok.png and can touch nothing else.
+designbox-cli render in/doc.designbox -o out/ok.png \
   --automation-read-root in --automation-write-root out
 
-figcraft-cli render in/doc.figcraft -o ./escaped.png \
+designbox-cli render in/doc.designbox -o ./escaped.png \
   --automation-read-root in --automation-write-root out
 # error: automation path rejected: . is outside the folders that may be written: …/out
 ```
@@ -189,7 +189,7 @@ machines.
 ### `mcp [--attach PORT] [--automation-read-root DIR]… [--automation-write-root DIR]…`
 
 Serve MCP on stdio: headless by default, or attached to a running app started with
-`figcraft --control PORT`. See [mcp.md](mcp.md). The automation roots (each repeatable; existing
+`designbox --control PORT`. See [mcp.md](mcp.md). The automation roots (each repeatable; existing
 folders) confine the files the agent's calls read (inside a read or write root) and write (inside a
 write root); everything else is refused ([mcp.md › Confining file access](mcp.md#confining-file-access)).
 They apply to the headless session only, and that is why `--attach` refuses them: an attached server
@@ -201,10 +201,10 @@ live sessions (`collab.*`: without a key on a server open to the public, with `c
 
 ### `plugin publish <folder> --server ws://host:port/[?key=KEY]`
 
-Publishes a plugin folder (`figcraft-plugin.json`, the module its `main` names, an optional `assets/`
-folder) to a `figcraft-server`'s plugin directory as a new version, and prints its name, version,
+Publishes a plugin folder (`designbox-plugin.json`, the module its `main` names, an optional `assets/`
+folder) to a `designbox-server`'s plugin directory as a new version, and prints its name, version,
 size and SHA-256. The server's key comes from the address or, better, from the
-`FIGCRAFT_SERVER_KEY` environment variable (it then stays out of the shell history and process
+`DESIGNBOX_SERVER_KEY` environment variable (it then stays out of the shell history and process
 lists); it is never printed. The bundle is checked before it is sent and again by the server. See
 [plugins.md](plugins.md#plugin-directories).
 

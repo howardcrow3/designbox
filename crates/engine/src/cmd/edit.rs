@@ -2,8 +2,8 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_doc::*;
-use figcraft_geom::Affine;
+use designbox_doc::*;
+use designbox_geom::Affine;
 use serde_json::{Value, json};
 
 use super::{CommandSpec, ok};
@@ -538,7 +538,7 @@ pub fn copy_to_clipboard(s: &mut Session, cmd: &str, ids: &[NodeId]) -> Result<(
     Ok(())
 }
 
-type Copied = (Vec<(NodeId, Vec<Node>)>, BTreeMap<String, ImageData>, Option<figcraft_geom::Rect>);
+type Copied = (Vec<(NodeId, Vec<Node>)>, BTreeMap<String, ImageData>, Option<designbox_geom::Rect>);
 
 fn copied(doc: &Document, ids: &[NodeId]) -> Copied {
     let ids = z_sorted(doc, &roots(doc, ids));
@@ -553,7 +553,7 @@ fn copied(doc: &Document, ids: &[NodeId]) -> Copied {
         }
         for n in &sub {
             for p in n.fills.iter().chain(n.strokes.iter()) {
-                if let figcraft_color::PaintKind::Image(img) = &p.kind
+                if let designbox_color::PaintKind::Image(img) = &p.kind
                     && let Some(d) = doc.images.get(&img.image)
                 {
                     images.insert(img.image.clone(), d.clone());
@@ -591,7 +591,7 @@ pub fn design_clipboard_buffer(html: &str) -> Option<Vec<u8>> {
     let start = html.find(CLIP_OPEN)? + CLIP_OPEN.len();
     let len = html.get(start..)?.find(CLIP_CLOSE)?;
     let bytes = clip_base64(html.get(start..start + len)?)?;
-    figcraft_format::fig::is_fig(&bytes).then_some(bytes)
+    designbox_format::fig::is_fig(&bytes).then_some(bytes)
 }
 
 fn paste_design_layers(s: &mut Session, p: &Value) -> Result<Value> {
@@ -679,7 +679,7 @@ pub fn paste_into(s: &mut Session, parent: NodeId, at: Option<(f64, f64)>) -> Re
         all.extend(map);
     }
     // Board connectors pasted with what they join join the pasted copies.
-    let originals: Vec<(NodeId, figcraft_doc::BoardItem)> =
+    let originals: Vec<(NodeId, designbox_doc::BoardItem)> =
         clip.nodes.iter().flat_map(|(_, nodes)| nodes).filter_map(|n| Some((*all.get(&n.id)?, n.board.clone()?))).collect();
     crate::board::rejoin(doc, &originals, &all, !copy_local);
     if let Some(src) = foreign {
@@ -713,7 +713,7 @@ fn paste(s: &mut Session, p: &Value) -> Result<Value> {
                 (Some(t), Some(b)) => {
                     let tb = doc.world_bounds(t);
                     match tb {
-                        Some(tb) if tb.contains(b.origin()) && tb.contains(figcraft_geom::Point::new(b.x1, b.y1)) => None,
+                        Some(tb) if tb.contains(b.origin()) && tb.contains(designbox_geom::Point::new(b.x1, b.y1)) => None,
                         Some(tb) => Some((tb.center().x - b.width() / 2.0, tb.center().y - b.height() / 2.0)),
                         None => None,
                     }
@@ -722,7 +722,7 @@ fn paste(s: &mut Session, p: &Value) -> Result<Value> {
                     // Off-screen originals paste at the viewport centre.
                     let v = &s.ds()?.view;
                     let (ox, oy) = v.origin();
-                    let vr = figcraft_geom::Rect::new(ox, oy, ox + v.vw / v.zoom.max(1e-9), oy + v.vh / v.zoom.max(1e-9));
+                    let vr = designbox_geom::Rect::new(ox, oy, ox + v.vw / v.zoom.max(1e-9), oy + v.vh / v.zoom.max(1e-9));
                     if vr.intersect(b).is_zero_area() { Some((v.cx - b.width() / 2.0, v.cy - b.height() / 2.0)) } else { None }
                 }
                 _ => None,
@@ -823,7 +823,7 @@ fn layers_at(s: &mut Session, p: &Value) -> Result<Value> {
     let zoom = s.ds()?.view.zoom.max(1e-6);
     let sel = s.selection();
     let result = crate::booleans::result_outline(doc, &sel);
-    let layers: Vec<Value> = figcraft_doc::geometry::layers_at(doc, s.page()?, figcraft_geom::Point::new(x, y), 2.0 / zoom, Some(&result))
+    let layers: Vec<Value> = designbox_doc::geometry::layers_at(doc, s.page()?, designbox_geom::Point::new(x, y), 2.0 / zoom, Some(&result))
         .into_iter()
         .filter_map(|(id, depth)| doc.node(id).map(|n| json!({"id": id, "name": n.name, "type": n.kind.type_name(), "depth": depth})))
         .collect();
@@ -864,8 +864,8 @@ fn select_area(s: &mut Session, p: &Value) -> Result<Value> {
     if ![x, y, w, h].iter().all(|v| v.is_finite() && v.abs() < 1e9) {
         return Err(bad(cmd, "the box is out of range"));
     }
-    let start = figcraft_geom::Point::new(x, y);
-    let r = figcraft_geom::Rect::from_points(start, figcraft_geom::Point::new(x + w, y + h));
+    let start = designbox_geom::Point::new(x, y);
+    let r = designbox_geom::Rect::from_points(start, designbox_geom::Point::new(x + w, y + h));
     let add = boolean(p, "add") == Some(true);
     let base = if add { s.selection() } else { Vec::new() };
     let within = s.marquee_within(start)?;
@@ -1189,7 +1189,7 @@ fn set(s: &mut Session, p: &Value) -> Result<Value> {
     let ds = s.ds()?;
     let pivot =
         ds.moved_origin().filter(|_| props.contains_key("rotation") && !props.contains_key("x") && !props.contains_key("y") && ds.selection == ids);
-    let pinned: Vec<(NodeId, figcraft_geom::Point)> = match pivot {
+    let pinned: Vec<(NodeId, designbox_geom::Point)> = match pivot {
         Some(o) => roots(&ds.doc, &ids)
             .into_iter()
             .map(|i| (i, ds.doc.world_transform(i)))
@@ -1244,7 +1244,7 @@ fn set(s: &mut Session, p: &Value) -> Result<Value> {
 /// face has another weight or slant than the name asks for ("Black" on a family whose heaviest is
 /// Bold), say which face it is. Families that aren't installed, and names that match a style or a
 /// named instance (spelled any way: "SemiBold", "Semi Bold"), say nothing.
-fn font_style_warnings(doc: &figcraft_doc::Document, ids: &[NodeId], props: &serde_json::Map<String, Value>) -> Vec<String> {
+fn font_style_warnings(doc: &designbox_doc::Document, ids: &[NodeId], props: &serde_json::Map<String, Value>) -> Vec<String> {
     let Some(style) = props.get("fontStyle").and_then(Value::as_str) else { return Vec::new() };
     let mut families: Vec<String> = match props.get("fontFamily").and_then(Value::as_str) {
         Some(f) => vec![f.to_string()],
@@ -1258,15 +1258,15 @@ fn font_style_warnings(doc: &figcraft_doc::Document, ids: &[NodeId], props: &ser
     families.sort();
     families.dedup();
     let norm = |s: &str| s.to_lowercase().replace([' ', '-', '_'], "");
-    let (want_w, want_i) = (i32::from(figcraft_doc::style_weight(style)), style.to_lowercase().contains("italic"));
+    let (want_w, want_i) = (i32::from(designbox_doc::style_weight(style)), style.to_lowercase().contains("italic"));
     families
         .into_iter()
         .filter_map(|family| {
-            let styles = figcraft_text::family_styles(&family);
+            let styles = designbox_text::family_styles(&family);
             if styles.is_empty() || styles.iter().any(|x| norm(x) == norm(style)) {
                 return None;
             }
-            let face = figcraft_text::find_face(&family, style).filter(|f| f.family.eq_ignore_ascii_case(&family))?;
+            let face = designbox_text::find_face(&family, style).filter(|f| f.family.eq_ignore_ascii_case(&family))?;
             let w = face.axis("wght").map_or(i32::from(face.weight), |a| a.clamp(f64::from(want_w)).round() as i32);
             if face.instance(style).is_some() || (w == want_w && face.italic == want_i) {
                 return None;
@@ -1299,7 +1299,7 @@ fn stroke_brush(s: &mut Session, p: &Value) -> Result<Value> {
     for i in ids {
         let n = doc.get_mut(i)?;
         if brush.is_some() && n.strokes.is_empty() {
-            n.strokes.push(figcraft_color::Paint::solid(figcraft_color::Color::BLACK));
+            n.strokes.push(designbox_color::Paint::solid(designbox_color::Color::BLACK));
         }
         n.stroke.brush = brush.clone();
     }
@@ -1335,9 +1335,9 @@ fn paint_list(s: &mut Session, p: &Value, fills: bool, add: bool) -> Result<Valu
         if add {
             let paint = match get(p, "paint").or_else(|| get(p, "color")) {
                 Some(v) => paint_of(v).ok_or_else(|| bad(cmd, "invalid paint"))?,
-                None if fills && frameish => figcraft_color::Paint::solid(figcraft_color::Color::WHITE),
-                None if fills => figcraft_color::Paint::solid(figcraft_color::Color::DEFAULT_SHAPE),
-                None => figcraft_color::Paint::solid(figcraft_color::Color::BLACK),
+                None if fills && frameish => designbox_color::Paint::solid(designbox_color::Color::WHITE),
+                None if fills => designbox_color::Paint::solid(designbox_color::Color::DEFAULT_SHAPE),
+                None => designbox_color::Paint::solid(designbox_color::Color::BLACK),
             };
             list.push(paint);
         } else {
@@ -1364,7 +1364,7 @@ fn paint_set(s: &mut Session, p: &Value, fills: bool) -> Result<Value> {
         let list = if fills { &mut n.fills } else { &mut n.strokes };
         let at = idx.unwrap_or(list.len().saturating_sub(1));
         if list.is_empty() {
-            list.push(figcraft_color::Paint::solid(if fills { figcraft_color::Color::DEFAULT_SHAPE } else { figcraft_color::Color::BLACK }));
+            list.push(designbox_color::Paint::solid(if fills { designbox_color::Color::DEFAULT_SHAPE } else { designbox_color::Color::BLACK }));
         }
         let Some(slot) = list.get_mut(at) else { return Err(bad(cmd, format!("no paint at index {at}"))) };
         let old = slot.clone();
@@ -1372,7 +1372,7 @@ fn paint_set(s: &mut Session, p: &Value, fills: bool) -> Result<Value> {
             *slot = np.clone();
         }
         if let Some(c) = col {
-            slot.kind = figcraft_color::PaintKind::Solid { color: c.with_alpha(1.0) };
+            slot.kind = designbox_color::PaintKind::Solid { color: c.with_alpha(1.0) };
             if c.a < 1.0 {
                 slot.opacity = c.a;
                 slot.color_alpha = c.a;
@@ -1408,15 +1408,15 @@ fn pattern_fill(s: &mut Session, p: &Value) -> Result<Value> {
     if req_targets(CMD, s, p)?.iter().any(|t| doc.is_ancestor(*t, src)) {
         return Err(bad(CMD, "a layer can't be filled with itself or a layer inside it"));
     }
-    let mut pt = figcraft_color::PatternPaint::new(src.0);
+    let mut pt = designbox_color::PatternPaint::new(src.0);
     pt.tile = parse(CMD, p, "tile")?.unwrap_or_default();
     pt.align = parse(CMD, p, "align")?.unwrap_or_default();
     pt.spacing = parse(CMD, p, "spacing")?.unwrap_or_default();
-    let (lo, hi) = figcraft_color::PatternPaint::SCALE_RANGE;
+    let (lo, hi) = designbox_color::PatternPaint::SCALE_RANGE;
     pt.scale = num(p, "scale").filter(|v| v.is_finite()).unwrap_or(1.0).clamp(lo, hi);
     let mut q = if p.is_object() { p.clone() } else { json!({}) };
     q["paint"] =
-        serde_json::to_value(figcraft_color::Paint { kind: figcraft_color::PaintKind::Pattern(pt), ..figcraft_color::Paint::pattern(src.0) })
+        serde_json::to_value(designbox_color::Paint { kind: designbox_color::PaintKind::Pattern(pt), ..designbox_color::Paint::pattern(src.0) })
             .map_err(|e| bad(CMD, e.to_string()))?;
     paint_set(s, &q, true)
 }

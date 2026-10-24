@@ -1,20 +1,20 @@
 [package]
-name = "figcraft-pdf"
+name = "designbox-pdf"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "FigCraft PDF export (krilla): vector shapes, gradients, embedded images, aligned strokes as outlines, clips, masks, blend modes, real selectable text, effects as rasters, print options (bleed, marks, page boxes, CMYK)"
+description = "DesignBox PDF export (krilla): vector shapes, gradients, embedded images, aligned strokes as outlines, clips, masks, blend modes, real selectable text, effects as rasters, print options (bleed, marks, page boxes, CMYK)"
 
 [lints]
 workspace = true
 
 [dependencies]
-figcraft-geom = { workspace = true }
-figcraft-color = { workspace = true }
-figcraft-doc = { workspace = true }
-figcraft-text = { workspace = true }
-figcraft-render = { workspace = true }
-figcraft-pathops = { workspace = true }
+designbox-geom = { workspace = true }
+designbox-color = { workspace = true }
+designbox-doc = { workspace = true }
+designbox-text = { workspace = true }
+designbox-render = { workspace = true }
+designbox-pathops = { workspace = true }
 krilla = { workspace = true }
 tiny-skia = { workspace = true }
 thiserror = { workspace = true }

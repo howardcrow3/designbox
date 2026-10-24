@@ -8,7 +8,7 @@ use serde_json::{Value, json};
 
 use crate::Session;
 use crate::params::id_of;
-use figcraft_doc::{Node, NodeId};
+use designbox_doc::{Node, NodeId};
 
 fn id(v: Value) -> NodeId {
     id_of(&v["id"]).unwrap()
@@ -297,7 +297,7 @@ fn a_style_link_leaves_values_its_style_does_not_set() {
     run(&mut s, "node.set", json!({"id": set, "props": props}));
     for (how, layer) in [("node.create", made), ("node.set", set)] {
         assert_eq!(link(&s, layer, "text").as_deref(), Some(st.as_str()), "{how}: linked");
-        assert_eq!(node(&s, layer).kind.text().unwrap().align_h, figcraft_doc::TextAlignH::Center, "{how}: `textAlign` applies");
+        assert_eq!(node(&s, layer).kind.text().unwrap().align_h, designbox_doc::TextAlignH::Center, "{how}: `textAlign` applies");
     }
 }
 

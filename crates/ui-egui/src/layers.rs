@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 use std::sync::Arc;
 
 use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, Ui, pos2, vec2};
-use figcraft_doc::{Document, NodeId, NodeKind};
+use designbox_doc::{Document, NodeId, NodeKind};
 use serde_json::json;
 
 use crate::a11y::{self, Region, RowInfo, Tip};
@@ -16,29 +16,29 @@ use crate::{FigApp, LeftTab};
 pub const ROW: f32 = 32.0;
 
 /// A boolean operation's icon.
-pub fn op_icon(op: figcraft_doc::BoolOp) -> Icon {
+pub fn op_icon(op: designbox_doc::BoolOp) -> Icon {
     match op {
-        figcraft_doc::BoolOp::Union => Icon::Union,
-        figcraft_doc::BoolOp::Subtract => Icon::Subtract,
-        figcraft_doc::BoolOp::Intersect => Icon::Intersect,
-        figcraft_doc::BoolOp::Exclude => Icon::Exclude,
+        designbox_doc::BoolOp::Union => Icon::Union,
+        designbox_doc::BoolOp::Subtract => Icon::Subtract,
+        designbox_doc::BoolOp::Intersect => Icon::Intersect,
+        designbox_doc::BoolOp::Exclude => Icon::Exclude,
     }
 }
 
 pub fn node_icon(doc: &Document, id: NodeId) -> Icon {
     let Some(n) = doc.node(id) else { return Icon::Rectangle };
     // An operand combining by an operation other than its group's shows that operation.
-    if let Some(op) = figcraft_engine::booleans::distinct_op(doc, id) {
+    if let Some(op) = designbox_engine::booleans::distinct_op(doc, id) {
         return op_icon(op);
     }
     match &n.kind {
         NodeKind::Page { .. } => Icon::Page,
-        NodeKind::Frame if figcraft_engine::components::is_slot(doc, id) => Icon::Slot,
+        NodeKind::Frame if designbox_engine::components::is_slot(doc, id) => Icon::Slot,
         NodeKind::Frame => {
             if let Some(l) = &n.layout {
                 match l.mode {
-                    figcraft_doc::LayoutMode::Vertical => Icon::LayoutV,
-                    figcraft_doc::LayoutMode::Grid => Icon::LayoutGrid,
+                    designbox_doc::LayoutMode::Vertical => Icon::LayoutV,
+                    designbox_doc::LayoutMode::Grid => Icon::LayoutGrid,
                     _ => Icon::LayoutH,
                 }
             } else {
@@ -48,7 +48,7 @@ pub fn node_icon(doc: &Document, id: NodeId) -> Icon {
         NodeKind::Group => Icon::Group,
         NodeKind::Section { .. } => Icon::Section,
         NodeKind::Rectangle => {
-            if n.fills.iter().any(|f| matches!(f.kind, figcraft_color::PaintKind::Image(_))) {
+            if n.fills.iter().any(|f| matches!(f.kind, designbox_color::PaintKind::Image(_))) {
                 Icon::Image
             } else {
                 Icon::Rectangle
@@ -492,7 +492,7 @@ fn listed_rows(doc: &Document, page: NodeId, expanded: &BTreeSet<NodeId>, filter
 }
 
 /// Whether the children of `n` don't show on the canvas (given whether `n` itself doesn't).
-fn hides_children(n: &figcraft_doc::Node, dimmed: bool) -> bool {
+fn hides_children(n: &designbox_doc::Node, dimmed: bool) -> bool {
     dimmed || !n.visible || n.hides_contents()
 }
 
@@ -518,7 +518,7 @@ fn matching(doc: &Document, id: NodeId, q: &str, out: &mut Vec<Row>) {
         let Some(cn) = doc.node(*c) else { continue };
         let name = if cn.name.is_empty() { cn.kind.label() } else { cn.name.as_str() };
         if name.to_lowercase().contains(q) {
-            let above: Vec<&figcraft_doc::Node> = doc.ancestors(*c).iter().filter_map(|a| doc.node(*a)).filter(|a| !a.is_page()).collect();
+            let above: Vec<&designbox_doc::Node> = doc.ancestors(*c).iter().filter_map(|a| doc.node(*a)).filter(|a| !a.is_page()).collect();
             let dimmed = above.iter().any(|a| hides_children(a, false));
             out.push(Row { id: *c, depth: 0, has_kids: false, dimmed, locked_above: above.iter().any(|a| a.locked) });
         }
@@ -971,7 +971,7 @@ fn layers(app: &mut FigApp, ui: &mut Ui) {
             // What is inside the dragged layers, and inside an instance, takes no drop.
             refused |= over
                 && (doc.ancestors(row.id).iter().any(|a| moving.contains(a))
-                    || n.parent.is_some_and(|p| figcraft_engine::components::structure_locked(&doc, p)));
+                    || n.parent.is_some_and(|p| designbox_engine::components::structure_locked(&doc, p)));
             if dragging.is_some()
                 && !blocked(row.id)
                 && let Some(p) = ui.input(|i| i.pointer.hover_pos())
@@ -1147,7 +1147,7 @@ fn layers(app: &mut FigApp, ui: &mut Ui) {
         if let Ok(ds) = app.session.ds_mut()
             && ds.text_edit.is_some()
         {
-            let _ = figcraft_engine::textedit::end(&mut app.session);
+            let _ = designbox_engine::textedit::end(&mut app.session);
         }
     }
     let _ = Color32::TRANSPARENT;

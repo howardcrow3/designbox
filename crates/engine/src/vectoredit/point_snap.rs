@@ -7,9 +7,9 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
-use figcraft_doc::{Document, NodeId, NodeKind};
-use figcraft_geom::kurbo::ParamCurve;
-use figcraft_geom::{Point, Vec2};
+use designbox_doc::{Document, NodeId, NodeKind};
+use designbox_geom::kurbo::ParamCurve;
+use designbox_geom::{Point, Vec2};
 
 use crate::snap::{Guide, Targets};
 use crate::tools::{PointerEvent, SNAP_PX};
@@ -40,7 +40,7 @@ pub fn targets_moving(
     others: &[(NodeId, Vec<usize>)],
 ) -> Targets {
     // Points are snapped on the page.
-    let mut t = Targets::gather_in(doc, page, edited.as_slice(), figcraft_geom::Affine::IDENTITY);
+    let mut t = Targets::gather_in(doc, page, edited.as_slice(), designbox_geom::Affine::IDENTITY);
     let mut budget = MAX_POINTS;
     for p in extra.iter().take(budget) {
         t.add_point(*p);

@@ -1,9 +1,9 @@
-//! Branches in `.figcraft` files: round trips, files from before branches, damaged entries.
+//! Branches in `.designbox` files: round trips, files from before branches, damaged entries.
 
 use std::io::Write;
 use std::sync::Arc;
 
-use figcraft_doc::{Document, NodeKind};
+use designbox_doc::{Document, NodeKind};
 
 use super::*;
 

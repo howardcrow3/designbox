@@ -1,6 +1,6 @@
-use figcraft_color::Paint;
-use figcraft_doc::NodeId;
-use figcraft_engine::{
+use designbox_color::Paint;
+use designbox_doc::NodeId;
+use designbox_engine::{
     Session,
     selection_colors::{SelectionColor, collect},
 };
@@ -29,7 +29,7 @@ fn aggregate_descendants_deduplicate_roots_and_ignore_images_and_hidden_paints()
     let colors = collect(s.doc().unwrap(), &[parent, a]);
     assert_eq!(colors.len(), 2);
     assert_eq!(group(&s, &[parent, a], "FF0000").targets.len(), 2);
-    run(&mut s, "fill.add", json!({"id":a,"paint":Paint::image("synthetic",figcraft_color::ImageScaleMode::Fill)}));
+    run(&mut s, "fill.add", json!({"id":a,"paint":Paint::image("synthetic",designbox_color::ImageScaleMode::Fill)}));
     run(&mut s, "fill.add", json!({"id":a,"paint":{"type":"solid","color":"#0000ff","visible":false}}));
     assert_eq!(collect(s.doc().unwrap(), &[parent]).len(), 2);
     run(&mut s, "select.set", json!({"ids":[parent]}));
@@ -183,7 +183,7 @@ fn equal_resolved_colors_from_different_styles_or_variables_stay_separate() {
 
 #[test]
 fn gradients_and_multiple_paints_are_edited_without_replacing_other_slots() {
-    use figcraft_color::{Color, Gradient, GradientKind};
+    use designbox_color::{Color, Gradient, GradientKind};
     let mut s = Session::new();
     let a = rectangle(&mut s, "#ff0000");
     let paint = Paint::gradient(Gradient::default_for(GradientKind::Linear, Color::BLACK));

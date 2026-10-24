@@ -9,9 +9,9 @@
 
 use std::collections::HashMap;
 
-use figcraft_color::{BlendMode, Color};
-use figcraft_doc::{Blur, Effect, EffectKind, Shadow};
-use figcraft_geom::{Affine, Vec2};
+use designbox_color::{BlendMode, Color};
+use designbox_doc::{Blur, Effect, EffectKind, Shadow};
+use designbox_geom::{Affine, Vec2};
 use usvg::filter::{ColorMatrixKind, CompositeOperator, Input, Kind, MorphologyOperator};
 
 use super::paint::color;

@@ -6,7 +6,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_doc::NodeId;
+use designbox_doc::NodeId;
 
 use crate::Error;
 use crate::change::{Change, DocProp, Entry, Family, Json, Prop, Target};

@@ -15,8 +15,8 @@ fn press(p: Pos2, pressed: bool) -> Vec<Event> {
     vec![Event::PointerMoved(p), Event::PointerButton { pos: p, button: PointerButton::Primary, pressed, modifiers: Default::default() }]
 }
 
-fn color(x: Color32) -> figcraft_color::Color {
-    figcraft_color::Color::new(f32::from(x.r()) / 255.0, f32::from(x.g()) / 255.0, f32::from(x.b()) / 255.0, 1.0)
+fn color(x: Color32) -> designbox_color::Color {
+    designbox_color::Color::new(f32::from(x.r()) / 255.0, f32::from(x.g()) / 255.0, f32::from(x.b()) / 255.0, 1.0)
 }
 
 /// The text painted on the foreground (menu) layers: (text, colour).

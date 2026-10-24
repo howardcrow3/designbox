@@ -1,12 +1,10 @@
-FigCraft app icon (figcraft.svg, figcraft-small.svg and every file derived from them in this
-directory: figcraft-<size>.png, figcraft.ico, hicolor/).
+DesignBox app icon and logos (designbox.svg, designbox-small.svg, every file derived from them in
+this directory: designbox-<size>.png, designbox.ico, hicolor/; and the High Turtle logo files in
+docs/brand/).
 
-Original artwork made for this project by the project owner: an engraving-style drawing, then
-vectorised. No third-party material. Licensed like the rest of FigCraft, under either of
-
-  * Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
-  * MIT license (https://opensource.org/licenses/MIT)
-
-at your option.
+These are the project owner's brand assets: the High Turtle mark and logo, and the icon tile made
+from it. They are not open source and are not covered by the MIT OR Apache-2.0 license that applies to
+the code. All rights are reserved by the project owner; they may be used unmodified as part of this
+repository and DesignBox, and forks or modified versions must replace them.
 
 Regenerate the derived files with `cargo xtask icon`.

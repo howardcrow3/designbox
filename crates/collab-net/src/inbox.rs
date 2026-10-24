@@ -5,7 +5,7 @@
 use std::collections::{BTreeMap, VecDeque};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use figcraft_engine::live::{Event, Presence};
+use designbox_engine::live::{Event, Presence};
 
 /// Wakes the UI (the desktop app passes egui's `request_repaint`).
 pub type Waker = Arc<dyn Fn() + Send + Sync>;
@@ -73,7 +73,7 @@ impl Inbox {
 
     /// Everything since the last drain: the events in order, then the latest presence of each
     /// peer.
-    pub fn drain(&self) -> Vec<figcraft_engine::live::Event> {
+    pub fn drain(&self) -> Vec<designbox_engine::live::Event> {
         let mut s = self.state.lock().unwrap_or_else(PoisonError::into_inner);
         let mut syncs = std::mem::take(&mut s.syncs).into_iter().peekable();
         let mut others = std::mem::take(&mut s.others).into_iter().peekable();
@@ -96,7 +96,7 @@ impl Inbox {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use figcraft_collab::message::ServerMsg;
+    use designbox_collab::message::ServerMsg;
 
     fn reject(batch_id: u64) -> Event {
         Event::Sync(ServerMsg::Reject { batch_id, reason: String::new(), fixes: Vec::new() })

@@ -3,8 +3,8 @@
 //! Escape.
 
 use egui::{Key, pos2};
-use figcraft_engine::Session;
-use figcraft_engine::branches::Side;
+use designbox_engine::Session;
+use designbox_engine::branches::Side;
 use serde_json::json;
 
 use crate::present_tests::{Ui, id};

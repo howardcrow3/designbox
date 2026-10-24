@@ -1,6 +1,6 @@
 use super::*;
-use figcraft_color::{Color, Paint};
-use figcraft_doc::{Document, Effect, NodeKind};
+use designbox_color::{Color, Paint};
+use designbox_doc::{Document, Effect, NodeKind};
 
 #[test]
 fn export_basic_shapes() {
@@ -84,9 +84,9 @@ fn nested_frame_paint_is_clipped_in_page_space() {
 }
 
 /// "ab" in black with a green second character, as outlines and as live text.
-fn two_colour_text() -> (Document, figcraft_doc::NodeId) {
-    use figcraft_doc::{StyleRun, TextData};
-    figcraft_text::scan_system_fonts();
+fn two_colour_text() -> (Document, designbox_doc::NodeId) {
+    use designbox_doc::{StyleRun, TextData};
+    designbox_text::scan_system_fonts();
     let mut d = Document::new("t");
     let page = d.first_page().unwrap();
     let mut text = TextData::new("ab");
@@ -118,8 +118,8 @@ fn text_run_fill_survives_live_text_export() {
 
 #[test]
 fn title_case_does_not_restart_words_across_fill_runs_in_live_text() {
-    use figcraft_doc::{StyleRun, TextCase, TextData};
-    figcraft_text::scan_system_fonts();
+    use designbox_doc::{StyleRun, TextCase, TextData};
+    designbox_text::scan_system_fonts();
     let mut d = Document::new("t");
     let page = d.first_page().unwrap();
     let mut text = TextData::new("hello");
@@ -139,8 +139,8 @@ fn title_case_does_not_restart_words_across_fill_runs_in_live_text() {
 /// live-text export must leave them out so the SVG still parses, for plain and per-run spans.
 #[test]
 fn live_text_export_drops_xml_forbidden_control_characters() {
-    use figcraft_doc::{StyleRun, TextData};
-    figcraft_text::scan_system_fonts();
+    use designbox_doc::{StyleRun, TextData};
+    designbox_text::scan_system_fonts();
     for styled in [false, true] {
         let mut d = Document::new("t");
         let page = d.first_page().unwrap();
@@ -166,27 +166,27 @@ fn live_text_export_drops_xml_forbidden_control_characters() {
 #[test]
 fn side_strokes_on_rounded_corners_export_as_their_area() {
     // border-l-4 rounded-r-lg: the stroke path is the 4 px bar (60 px tall), drawn even-odd.
-    use figcraft_geom::Shape;
+    use designbox_geom::Shape;
     let mut d = Document::new("t");
     let p = d.first_page().unwrap();
     let f = d.create(p, NodeKind::Frame, "F", 0.0, 0.0, 120.0, 60.0).unwrap();
     let n = d.get_mut(f).unwrap();
     n.corners.radii = [0.0, 8.0, 8.0, 0.0];
     n.strokes = vec![Paint::solid(Color::from_hex("FF0000").unwrap())];
-    n.stroke.align = figcraft_doc::StrokeAlign::Inside;
+    n.stroke.align = designbox_doc::StrokeAlign::Inside;
     n.stroke.sides = Some([0.0, 0.0, 0.0, 4.0]);
     let svg = export_svg(&d, &[f], &SvgOptions::default()).unwrap();
     let stroke = svg.split("<path").find(|e| e.contains("#FF0000")).unwrap();
     assert!(stroke.contains("fill-rule=\"evenodd\""), "{stroke}");
     let data = stroke.split("d=\"").nth(1).and_then(|s| s.split('"').next()).unwrap();
-    let area = figcraft_geom::BezPath::from_svg(data).unwrap().area().abs();
+    let area = designbox_geom::BezPath::from_svg(data).unwrap().area().abs();
     assert!((area - 240.0).abs() < 0.01, "{area}");
 }
 
 #[test]
 fn point_joins_equal_to_the_layer_join_keep_a_plain_stroke() {
-    use figcraft_doc::{StrokeJoin, VectorNetwork};
-    use figcraft_geom::kurbo::Point;
+    use designbox_doc::{StrokeJoin, VectorNetwork};
+    use designbox_geom::kurbo::Point;
     let svg_with = |join: StrokeJoin| {
         let mut network = VectorNetwork::from_points(&[Point::new(0.0, 0.0), Point::new(50.0, 50.0), Point::new(100.0, 0.0)], false);
         for v in &mut network.vertices {
@@ -258,7 +258,7 @@ fn a_filled_open_curve_is_closed_for_its_fill() {
     let p = d.first_page().unwrap();
     let svg = r##"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50"><path fill="#000000" d="M0 0C0 50 100 50 100 0"/></svg>"##;
     import_svg(&mut d, svg.as_bytes(), p, 0.0, 0.0, "x").unwrap();
-    let loops = |n: &figcraft_doc::Node| match &n.kind {
+    let loops = |n: &designbox_doc::Node| match &n.kind {
         NodeKind::Vector { network } => network.regions.iter().map(|r| r.loops.len()).sum::<usize>(),
         _ => 0,
     };

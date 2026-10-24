@@ -2,9 +2,9 @@
 use std::sync::Arc;
 
 use egui::{CursorIcon, Id, Pos2, Rect, Stroke, Ui, vec2};
-use figcraft_doc::{Document, NodeId};
-use figcraft_engine::selection_reorder::ReorderLayout;
-use figcraft_engine::selection_spacing::{Axis, SelectionSpacing, selection_spacing};
+use designbox_doc::{Document, NodeId};
+use designbox_engine::selection_reorder::ReorderLayout;
+use designbox_engine::selection_spacing::{Axis, SelectionSpacing, selection_spacing};
 use serde_json::json;
 
 use crate::FigApp;
@@ -64,7 +64,7 @@ fn drag_id() -> Id {
 /// The reorder ring of a layer with world bounds `b`: its centre on screen and hit radius. The
 /// radius is 8 px, at most a quarter of the layer's smaller side on screen, so most of a small
 /// layer still drags the selection; a layer under 16 px on screen has no ring.
-fn ring(app: &FigApp, b: figcraft_geom::Rect) -> Option<(Pos2, f32)> {
+fn ring(app: &FigApp, b: designbox_geom::Rect) -> Option<(Pos2, f32)> {
     let zoom = app.session.ds().map_or(1.0, |d| d.view.zoom);
     let side = ((b.x1 - b.x0).min(b.y1 - b.y0) * zoom) as f32;
     (side >= 16.0).then(|| (app.to_screen((b.x0 + b.x1) * 0.5, (b.y0 + b.y1) * 0.5), (side / 4.0).min(8.0)))
@@ -133,13 +133,13 @@ struct Handle {
     hit: Rect,
 }
 
-fn bounds(doc: &Document, ids: &[NodeId]) -> Option<figcraft_geom::Rect> {
+fn bounds(doc: &Document, ids: &[NodeId]) -> Option<designbox_geom::Rect> {
     ids.iter().filter_map(|id| doc.world_bounds(*id)).reduce(|a, b| a.union(b))
 }
 
 fn handles(app: &FigApp, axis: &Axis) -> Vec<Handle> {
     let Ok(doc) = app.session.doc() else { return vec![] };
-    let cross = |b: figcraft_geom::Rect| if axis.vertical { (b.x0, b.x1) } else { (b.y0, b.y1) };
+    let cross = |b: designbox_geom::Rect| if axis.vertical { (b.x0, b.x1) } else { (b.y0, b.y1) };
     let mut out = Vec::new();
     for pair in axis.tracks.windows(2) {
         let Some((a, b)) = pair.first().zip(pair.get(1)) else { continue };
@@ -174,7 +174,7 @@ fn handles(app: &FigApp, axis: &Axis) -> Vec<Handle> {
 fn available(app: &FigApp) -> bool {
     app.ui.right_tab == crate::RightTab::Design
         && app.ui.picker.is_none()
-        && app.session.tool.tool == figcraft_engine::ToolId::Move
+        && app.session.tool.tool == designbox_engine::ToolId::Move
         && !app.session.tool.busy()
         && app.session.ds().is_ok_and(|d| d.text_edit.is_none() && d.vector_edit.is_none())
 }
@@ -182,7 +182,7 @@ fn available(app: &FigApp) -> bool {
 pub fn cancel(app: &mut FigApp, ctx: &egui::Context) -> bool {
     let drag = ctx.data(|d| d.get_temp::<Drag>(drag_id()));
     if let Some(drag) = &drag {
-        figcraft_engine::selection_spacing::cancel_gesture(&mut app.session, drag.uid);
+        designbox_engine::selection_spacing::cancel_gesture(&mut app.session, drag.uid);
         ctx.data_mut(|d| d.remove::<Drag>(drag_id()));
     }
     drag.is_some()
@@ -244,7 +244,7 @@ pub fn input(app: &mut FigApp, ctx: &egui::Context, pos: Option<Pos2>, hovered: 
                         .slots
                         .iter()
                         .min_by(|a, b| {
-                            let center = |b: figcraft_geom::Rect| app.to_screen((b.x0 + b.x1) * 0.5, (b.y0 + b.y1) * 0.5);
+                            let center = |b: designbox_geom::Rect| app.to_screen((b.x0 + b.x1) * 0.5, (b.y0 + b.y1) * 0.5);
                             center(a.1).distance_sq(p).total_cmp(&center(b.1).distance_sq(p))
                         })
                         .map(|(id, _)| *id)
@@ -377,7 +377,7 @@ pub fn draw(app: &FigApp, painter: &egui::Painter) {
 mod cache_tests {
     use super::*;
     use crate::NoServices;
-    use figcraft_engine::Session;
+    use designbox_engine::Session;
 
     fn setup() -> (FigApp, egui::Context, Vec<NodeId>) {
         let mut session = Session::new();

@@ -1,0 +1,14 @@
+# Runs designbox-backup.service every night (see that file).
+#   sudo systemctl enable --now designbox-backup.timer
+#   systemctl list-timers designbox-backup.timer
+
+[Unit]
+Description=Nightly backup of designbox-server's data directory
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

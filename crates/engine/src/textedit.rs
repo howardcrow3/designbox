@@ -1,6 +1,6 @@
 //! On-canvas text editing: caret, selection, typing. A whole editing session is one undo step.
 
-use figcraft_doc::{Document, ListStyle, NodeId, NodeKind, TextData};
+use designbox_doc::{Document, ListStyle, NodeId, NodeKind, TextData};
 
 use crate::{EngineError, Preedit, Result, Session, TextEdit};
 
@@ -243,7 +243,7 @@ pub fn key(s: &mut Session, key: &str, shift: bool, word: bool, line: bool) -> R
                     } else if word {
                         word_left(&chars, a)
                     } else {
-                        figcraft_text::grapheme_step(&t.characters, a, false)
+                        designbox_text::grapheme_step(&t.characters, a, false)
                     };
                     (from, a)
                 } else {
@@ -252,7 +252,7 @@ pub fn key(s: &mut Session, key: &str, shift: bool, word: bool, line: bool) -> R
                     } else if word {
                         word_right(&chars, a)
                     } else {
-                        figcraft_text::grapheme_step(&t.characters, a, true).min(n)
+                        designbox_text::grapheme_step(&t.characters, a, true).min(n)
                     };
                     (a, to)
                 };
@@ -267,7 +267,7 @@ pub fn key(s: &mut Session, key: &str, shift: bool, word: bool, line: bool) -> R
     let layout = {
         let doc = s.doc()?;
         let node = doc.get(te.id)?;
-        figcraft_text::layout_node(node).map(|(l, _)| l)
+        designbox_text::layout_node(node).map(|(l, _)| l)
     };
     let (a, b) = range(&te);
     // Without Shift, a selection collapses first: plain arrows stop at its edge, word/line moves
@@ -287,7 +287,7 @@ pub fn key(s: &mut Session, key: &str, shift: bool, word: bool, line: bool) -> R
         // Plain arrows move on screen through right-to-left runs, by char elsewhere.
         "Left" | "Right" => match layout.as_ref().and_then(|l| l.visual_step(cur, key == "Right")) {
             Some(i) => i.min(n),
-            None => figcraft_text::grapheme_step(&t.characters, cur, key == "Right").min(n),
+            None => designbox_text::grapheme_step(&t.characters, cur, key == "Right").min(n),
         },
         "Home" if line => 0,
         "End" if line => n,
@@ -460,7 +460,7 @@ pub fn selected_range(s: &Session) -> Option<(NodeId, usize, usize)> {
 mod tests {
     use super::*;
     use crate::tools::{PointerEvent, PointerKind};
-    use figcraft_doc::{ListStyle, TextAutoResize, TextCase, TextDecoration};
+    use designbox_doc::{ListStyle, TextAutoResize, TextCase, TextDecoration};
     use serde_json::json;
 
     fn setup(text: &str) -> (Session, NodeId) {
@@ -502,7 +502,7 @@ mod tests {
         let t = data(&s, id);
         assert_eq!(t.characters, "Hello");
         assert!(t.runs.is_empty());
-        assert_eq!(t.align_h, figcraft_doc::TextAlignH::Left);
+        assert_eq!(t.align_h, designbox_doc::TextAlignH::Left);
     }
 
     #[test]
@@ -583,7 +583,7 @@ mod tests {
     #[test]
     fn pointer_double_click_drag_and_shift_click() {
         let (mut s, id) = setup("Hello world");
-        let Some((l, _)) = figcraft_text::layout_node(s.doc().unwrap().node(id).unwrap()) else { return };
+        let Some((l, _)) = designbox_text::layout_node(s.doc().unwrap().node(id).unwrap()) else { return };
         if l.glyphs.is_empty() {
             return; // no fonts
         }
