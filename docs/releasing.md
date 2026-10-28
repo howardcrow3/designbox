@@ -140,6 +140,29 @@ packaging/macos/verify.sh --arch aarch64
 hdiutil attach -nobrowse -readonly dist/release/designbox-*-macos-aarch64.dmg   # inspect, then detach
 ```
 
+#### Mac App Store
+
+`packaging/macos/package-appstore.sh` builds the store package: the same `DesignBox.app`, but
+sandboxed (`entitlements-appstore.plist.in`: App Sandbox, network client, user-selected files),
+signed with an **Apple Distribution** identity, carrying the store provisioning profile as
+`Contents/embedded.provisionprofile`, and wrapped by `productbuild` in a `.pkg` signed with a
+**Mac Installer Distribution** identity. It is not notarized (App Review replaces that) and leaves
+the CLI out. `CFBundleVersion` is set to `APP_STORE_BUILD` (the workflow passes the run number)
+because the store rejects a repeated build number. `import-appstore-certs.sh` imports the two
+certificates and the profile into a temporary keychain in CI.
+
+The `Mac App Store` workflow (`.github/workflows/appstore.yml`, Run workflow) does this in the
+`appstore` environment and attaches the `.pkg` to the run; tick `upload` to validate and upload it
+with `altool` and an App Store Connect API key, or add the `.pkg` yourself with Apple's Transporter
+app. Secrets and Apple-side setup: `APPLE_DIST_CERTIFICATE`, `APPLE_DIST_CERTIFICATE_PASSWORD`,
+`APPLE_INSTALLER_CERTIFICATE`, `APPLE_INSTALLER_CERTIFICATE_PASSWORD`, `APPLE_PROVISIONING_PROFILE`,
+`APPLE_TEAM_ID`, `KEYCHAIN_PASSWORD`, and for upload `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_API_KEY`.
+
+Not yet exercised on a Mac: the first run needs a real store record and certificates. Known open
+points: files opened by path or from the command line are unreachable inside the sandbox (open
+dialogs and drag and drop work), and the entitlement keys and the `altool` upload route should be
+confirmed against Apple's current documentation on the first run.
+
 ### Windows
 
 `packaging/windows/package.ps1 -Arch x64|x86|arm64` builds with `+crt-static` (no VC++

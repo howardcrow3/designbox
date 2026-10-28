@@ -1,0 +1,107 @@
+# Builds the Mac App Store package (sandboxed app in a signed .pkg) and, when asked, uploads it to
+# App Store Connect. Standalone: it does not use the shared release workflow, which builds the
+# notarized direct-download .dmg. Run it from the Actions tab (Run workflow).
+#
+# Secrets live in the repo's `appstore` environment (Settings > Environments > appstore):
+#   APPLE_DIST_CERTIFICATE, APPLE_DIST_CERTIFICATE_PASSWORD            Apple Distribution .p12 (base64)
+#   APPLE_INSTALLER_CERTIFICATE, APPLE_INSTALLER_CERTIFICATE_PASSWORD  Mac Installer Distribution .p12 (base64)
+#   APPLE_PROVISIONING_PROFILE                                          the .provisionprofile (base64)
+#   APPLE_TEAM_ID, KEYCHAIN_PASSWORD
+#   ASC_KEY_ID, ASC_ISSUER_ID, ASC_API_KEY                              App Store Connect API key (only
+#                                                                        to validate/upload; ASC_API_KEY is
+#                                                                        the text of the .p8 file)
+# See docs/releasing.md ("Mac App Store").
+name: Mac App Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: "Validate and upload the package to App Store Connect (needs the ASC_* secrets)"
+        type: boolean
+        default: false
+      version:
+        description: "Version override, e.g. 0.10.1 (empty: the version in Cargo.toml)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: appstore-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  DESIGNBOX_VERSION: ${{ inputs.version }}
+  # The craft-fonts commit the release builds use (same pin as build-installers.yml).
+  CRAFT_FONTS_REF: 43913056ce82a3fdad0ef69f6b88d1dc922a8104
+
+jobs:
+  appstore:
+    name: Build and sign the .pkg
+    runs-on: macos-latest
+    timeout-minutes: 90
+    environment: appstore
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch craft-fonts
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/craft-fonts
+          ref: ${{ env.CRAFT_FONTS_REF }}
+          path: craft-fonts
+      - name: Point the build at craft-fonts
+        if: ${{ hashFiles('craft-fonts/fonts/manifest.txt') != '' }}
+        shell: bash
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: appstore-universal
+      - name: Apply version override
+        if: ${{ inputs.version != '' }}
+        run: cargo xtask version set "${{ inputs.version }}"
+      - name: Import certificates and provisioning profile
+        env:
+          APPLE_DIST_CERTIFICATE: ${{ secrets.APPLE_DIST_CERTIFICATE }}
+          APPLE_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DIST_CERTIFICATE_PASSWORD }}
+          APPLE_INSTALLER_CERTIFICATE: ${{ secrets.APPLE_INSTALLER_CERTIFICATE }}
+          APPLE_INSTALLER_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_CERTIFICATE_PASSWORD }}
+          APPLE_PROVISIONING_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: packaging/macos/import-appstore-certs.sh
+      - name: Write the App Store Connect API key
+        if: ${{ inputs.upload }}
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+        run: |
+          umask 077
+          mkdir -p "$HOME/private_keys"
+          printf '%s\n' "$ASC_API_KEY" > "$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+      - name: Build, sign, package
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_BUILD: ${{ github.run_number }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          UPLOAD: ${{ inputs.upload }}
+        run: |
+          flags=()
+          if [ "$UPLOAD" = "true" ]; then flags+=(--upload); fi
+          packaging/macos/package-appstore.sh --arch universal ${flags[@]+"${flags[@]}"}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appstore-pkg
+          path: dist/release/*.pkg
+          if-no-files-found: error
+      - name: Remove temporary keychain and API key
+        if: always()
+        run: |
+          if [ -n "${MACOS_KEYCHAIN:-}" ]; then security delete-keychain "$MACOS_KEYCHAIN" || true; fi
+          rm -f "$HOME"/private_keys/AuthKey_*.p8
