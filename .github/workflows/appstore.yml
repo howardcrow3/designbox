@@ -45,10 +45,10 @@ jobs:
     timeout-minutes: 90
     environment: appstore
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Fetch craft-fonts
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: storytold/craft-fonts
           ref: ${{ env.CRAFT_FONTS_REF }}
@@ -95,7 +95,7 @@ jobs:
           flags=()
           if [ "$UPLOAD" = "true" ]; then flags+=(--upload); fi
           packaging/macos/package-appstore.sh --arch universal ${flags[@]+"${flags[@]}"}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: appstore-pkg
           path: dist/release/*.pkg

@@ -50,11 +50,11 @@ jobs:
     # Ubuntu 22.04 (glibc 2.35) so the binaries also run on newer distributions.
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Fetch craft-fonts
         if: ${{ !inputs.skip-fonts }}
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: storytold/craft-fonts
           ref: ${{ env.CRAFT_FONTS_REF }}
@@ -80,7 +80,7 @@ jobs:
         run: packaging/linux/package.sh
       - name: Package the collaboration server
         run: packaging/server/package.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: installers-linux
           path: dist/release/*
@@ -90,11 +90,11 @@ jobs:
     name: Windows (msi, portable zip)
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Fetch craft-fonts
         if: ${{ !inputs.skip-fonts }}
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: storytold/craft-fonts
           ref: ${{ env.CRAFT_FONTS_REF }}
@@ -114,7 +114,7 @@ jobs:
       - name: Package (unsigned)
         shell: pwsh
         run: pwsh packaging/windows/package.ps1 -Arch x64
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: installers-windows
           path: dist/release/*
@@ -124,11 +124,11 @@ jobs:
     name: macOS (universal dmg)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Fetch craft-fonts
         if: ${{ !inputs.skip-fonts }}
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: storytold/craft-fonts
           ref: ${{ env.CRAFT_FONTS_REF }}
@@ -143,7 +143,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Package (ad-hoc signed, not notarized)
         run: packaging/macos/package.sh --arch universal
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: installers-macos
           path: dist/release/*
@@ -153,11 +153,11 @@ jobs:
     name: Web (static site zip)
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # The browser has no system fonts: without craft-fonts the web build can't draw text.
       - name: Fetch craft-fonts
         if: ${{ !inputs.skip-fonts }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: storytold/craft-fonts
           ref: ${{ env.CRAFT_FONTS_REF }}
@@ -174,7 +174,7 @@ jobs:
           tool: trunk
       - name: Package
         run: packaging/web/package.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: installers-web
           path: dist/release/*
@@ -187,11 +187,11 @@ jobs:
     # best guess, so a failure here is reported but never fails the run or blocks the release.
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Fetch craft-fonts
         if: ${{ !inputs.skip-fonts }}
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: storytold/craft-fonts
           ref: ${{ env.CRAFT_FONTS_REF }}
@@ -211,7 +211,7 @@ jobs:
             . "$HOME/.cargo/env"
             if [ -f craft-fonts/fonts/manifest.txt ]; then export CRAFT_FONTS_DIR="$PWD/craft-fonts"; fi
             bash packaging/freebsd/package.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: installers-freebsd
           path: dist/release/*
@@ -226,8 +226,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           pattern: installers-*
           path: out
