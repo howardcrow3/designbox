@@ -25,7 +25,8 @@ pub struct Args {
 
 /// An invite link rather than a file (`designbox:` links, in any case).
 pub fn is_invite(arg: &str) -> bool {
-    arg.get(..9).is_some_and(|s| s.eq_ignore_ascii_case("designbox:"))
+    const SCHEME: &str = "designbox:";
+    arg.get(..SCHEME.len()).is_some_and(|s| s.eq_ignore_ascii_case(SCHEME))
 }
 
 /// The path a local `file://` URL names (`%XX` escapes decoded); `None` for anything else.
