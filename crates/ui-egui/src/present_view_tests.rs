@@ -1,9 +1,9 @@
 //! The presenter's scale options, device rotation and scroll momentum, driven headless through
 //! egui (the harness is `present_tests`'), and the motion maths on its own.
 
-use egui::{Event, Key, Pos2, pos2, vec2};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
+use egui::{Event, Key, Pos2, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::present::{PresentScale, fling_axis, rubber_band};

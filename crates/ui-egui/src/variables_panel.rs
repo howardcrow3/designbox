@@ -7,9 +7,9 @@
 //! variables JSON (or CSS). Everything goes through `variable.*` / `library.*` commands, so it's
 //! undoable and the same over MCP.
 
-use egui::{Align2, Context, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, UiBuilder, pos2, vec2};
 use designbox_doc::{Collection, Document, PublishedLibrary, Variable, VariableType, VariableValue, Variables, scopes_for};
 use designbox_engine::library;
+use egui::{Align2, Context, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, UiBuilder, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

@@ -1,10 +1,10 @@
 //! The eyedropper of a colour picker, driven through egui headless: the colour it samples goes to
 //! the paint the picker edits (a stroke, an effect), not to the layer's fill (vectorcraft#3342).
 
-use egui::accesskit::Role;
-use egui::{Event, Pos2, pos2};
 use designbox_doc::NodeId;
 use designbox_engine::{Session, ToolId};
+use egui::accesskit::Role;
+use egui::{Event, Pos2, pos2};
 use serde_json::json;
 
 use crate::colorpicker::PickerTarget;

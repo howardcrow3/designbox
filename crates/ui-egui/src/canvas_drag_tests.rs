@@ -5,8 +5,8 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use egui::{Event, vec2};
 use designbox_engine::Session;
+use egui::{Event, vec2};
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

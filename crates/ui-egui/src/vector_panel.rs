@@ -3,9 +3,9 @@
 //! selected width point with the Variable width tool (in place of the layer's position and
 //! dimensions).
 
-use egui::{Id, Ui};
 use designbox_doc::{Document, HandleMirroring, StrokeCap, StrokeJoin};
 use designbox_engine::vectoredit::{self, VectorEdit};
+use egui::{Id, Ui};
 use serde_json::{Value, json};
 
 use crate::FigApp;

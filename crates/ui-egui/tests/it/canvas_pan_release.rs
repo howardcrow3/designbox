@@ -1,9 +1,9 @@
 //! A canvas pan (middle button or Space + primary) ends when its button is released, even when the
 //! release happens over a panel: returning to the canvas with no button held must not move the view.
 
-use egui::{Event, Key, PointerButton, Pos2, RawInput, Rect, vec2};
 use designbox_engine::Session;
 use designbox_ui_egui::{FigApp, NoServices};
+use egui::{Event, Key, PointerButton, Pos2, RawInput, Rect, vec2};
 use serde_json::json;
 
 struct Frames {

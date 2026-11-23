@@ -6,9 +6,9 @@ use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::{Arc, Mutex};
 
-use egui::Id;
 use designbox_color::{Color, Paint};
 use designbox_doc::{Document, Node, NodeKind, TextData, TextStyle};
+use egui::Id;
 
 /// Most previews kept before the cache starts over.
 const MAX: usize = 2000;

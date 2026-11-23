@@ -2,9 +2,9 @@
 //! branch with a conflict, keeps chosen sides while they still name a conflict, and closes with
 //! Escape.
 
-use egui::{Key, pos2};
 use designbox_engine::Session;
 use designbox_engine::branches::Side;
+use egui::{Key, pos2};
 use serde_json::json;
 
 use crate::present_tests::{Ui, id};

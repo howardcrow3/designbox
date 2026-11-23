@@ -1,8 +1,8 @@
 //! A double-click on the empty canvas, driven through egui headless: the gesture its second press
 //! began is dropped, so the tool is idle once the button is up.
 
-use egui::{Event, Modifiers, PointerButton, Pos2};
 use designbox_engine::Session;
+use egui::{Event, Modifiers, PointerButton, Pos2};
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

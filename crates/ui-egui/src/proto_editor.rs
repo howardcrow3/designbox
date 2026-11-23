@@ -4,10 +4,10 @@
 //! set variable values given as expressions. Every edit runs a `proto.action.*` or
 //! `proto.conditional.*` command (one undo step each).
 
-use egui::{Align2, CornerRadius, Id, Rect, Sense, Stroke, Ui, pos2, vec2};
 use designbox_doc::proto::{Action, ConditionalBlock, Expr, ExprOp};
 use designbox_doc::{Document, NodeId, VariableType, VariableValue, Variables};
 use designbox_engine::cmd::proto_actions::{action_at, start_value};
+use egui::{Align2, CornerRadius, Id, Rect, Sense, Stroke, Ui, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

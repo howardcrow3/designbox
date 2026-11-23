@@ -1,7 +1,7 @@
 //! Regression for #373: actual pointer gestures on the Typography section's three leading icons.
-use egui::{Event, Id, Modifiers, Pos2, RawInput, Rect, vec2};
 use designbox_doc::{LetterSpacing, LineHeight, NodeId};
 use designbox_engine::Session;
+use egui::{Event, Id, Modifiers, Pos2, RawInput, Rect, vec2};
 use serde_json::json;
 
 use crate::{FigApp, NoServices};

@@ -3,8 +3,8 @@
 //! open panel draws no frames while nothing changes.
 
 use base64::Engine as _;
-use egui::Pos2;
 use designbox_engine::Session;
+use egui::Pos2;
 use serde_json::{Value, json};
 
 use crate::colorpicker::PickerTarget;

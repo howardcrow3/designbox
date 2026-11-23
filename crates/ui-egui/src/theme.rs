@@ -294,7 +294,11 @@ pub fn install_fonts(ctx: &Context, system: bool, cjk: u8) {
     // Keep the logo's typeface independent of UI text. System Archivo is used when available;
     // releases with craft-fonts embed it so the wordmark does not depend on installation.
     let archivo = find("Archivo", "SemiBold").map(FontData::from_static).or_else(|| {
-        system.then(|| designbox_text::find_face("Archivo", "SemiBold")).flatten().filter(|face| face.family == "Archivo").map(|face| font_data(&face))
+        system
+            .then(|| designbox_text::find_face("Archivo", "SemiBold"))
+            .flatten()
+            .filter(|face| face.family == "Archivo")
+            .map(|face| font_data(&face))
     });
     let mut brand = Vec::new();
     if let Some(data) = archivo {

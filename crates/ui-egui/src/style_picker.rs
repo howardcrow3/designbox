@@ -8,10 +8,10 @@
 //! creates a style from the selection (for text, the selected chars); the detach button unlinks
 //! it. Colour slots also list colour variables to bind (this file's, then each enabled library's).
 
-use egui::{Align2, Color32, CornerRadius, Id, Rect, Response, Sense, Stroke, Ui, pos2, vec2};
 use designbox_color::{Paint, PaintKind};
 use designbox_doc::{Document, GridKind, Node, NodeId, PublishedLibrary, Style, StyleKind, TextStyle, VariableType, trim_num};
 use designbox_engine::library;
+use egui::{Align2, Color32, CornerRadius, Id, Rect, Response, Sense, Stroke, Ui, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

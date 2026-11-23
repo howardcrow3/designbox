@@ -3,8 +3,8 @@
 //! Everything goes through `transform.scale`, so strokes, effects, corner radii and text scale
 //! with the layers.
 
-use egui::{CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_doc::{Document, NodeId};
+use egui::{CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;

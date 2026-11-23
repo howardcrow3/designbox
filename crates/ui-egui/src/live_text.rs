@@ -5,8 +5,8 @@
 //! don't blink: they draw only when the canvas draws anyway (a presence update wakes it), so an
 //! idle session asks for no frames.
 
-use egui::{Align2, Shape, Stroke, vec2};
 use designbox_engine::live::editing_hint;
+use egui::{Align2, Shape, Stroke, vec2};
 
 use crate::FigApp;
 use crate::canvas::TextOnScreen;

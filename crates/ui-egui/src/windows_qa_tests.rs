@@ -2,9 +2,9 @@
 //! field keeps its value when the pointer lets go, typing on a field Tab reached edits it, and
 //! Escape closes a dialog without deselecting.
 
-use egui::{Event, Key, Modifiers, Pos2, Rect, vec2};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
+use egui::{Event, Key, Modifiers, Pos2, Rect, vec2};
 use serde_json::json;
 
 use crate::a11y::focused_name;

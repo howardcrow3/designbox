@@ -6,10 +6,10 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use egui::{Align2, CornerRadius, Id, Rect, Sense, Ui, pos2, vec2};
 use designbox_doc::{Document, NodeId};
 use designbox_engine::branches::{self, BranchState, Review, Side, SideChanges};
 use designbox_engine::devcompare::ChangeKind;
+use egui::{Align2, CornerRadius, Id, Rect, Sense, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;

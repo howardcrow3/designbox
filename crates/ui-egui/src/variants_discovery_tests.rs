@@ -2,9 +2,9 @@
 //! headless: the Design panel offers Combine for two or more main components and Add variant for
 //! a lone one, and the canvas / layers context menu lists Combine only when it applies.
 
-use egui::Pos2;
 use designbox_doc::{NodeId, NodeKind};
 use designbox_engine::Session;
+use egui::Pos2;
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

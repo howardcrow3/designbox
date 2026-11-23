@@ -3,8 +3,8 @@
 //! Up/Down move the highlight and Enter runs it, gone entries drop out of Recents, a used plugin
 //! resolves back to a row, and a press outside the panel closes it.
 
-use egui::{Event, Key, Modifiers, Pos2};
 use designbox_engine::Session;
+use egui::{Event, Key, Modifiers, Pos2};
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

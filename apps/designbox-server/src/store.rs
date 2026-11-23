@@ -943,7 +943,8 @@ impl Store {
             return Err(CODES_BUSY.into());
         }
         // Anything that isn't a code's symbols is a wrong code too (and costs no hashing).
-        let key = designbox_collab::code::normalize(typed).ok().filter(|c| c.len() == designbox_collab::code::ONLINE_LEN).map(|c| codes::Key::new(&c));
+        let key =
+            designbox_collab::code::normalize(typed).ok().filter(|c| c.len() == designbox_collab::code::ONLINE_LEN).map(|c| codes::Key::new(&c));
         let found = key.as_ref().and_then(|k| self.find_code(k));
         self.abuse.code_tried(ip, found.is_some(), now);
         match found {

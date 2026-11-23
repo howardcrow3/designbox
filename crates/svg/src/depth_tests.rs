@@ -54,6 +54,7 @@ fn export_depth_ignores_hidden_subtrees_and_checks_masks_and_raster_fallbacks() 
     doc.get_mut(inner).unwrap().is_mask = true;
     assert!(matches!(try_export_svg(&doc, &[root], &SvgOptions::default()), Err(SvgError::Depth(_))));
     doc.get_mut(inner).unwrap().is_mask = false;
-    doc.get_mut(root).unwrap().effects = vec![designbox_doc::Effect { kind: EffectKind::LayerBlur(designbox_doc::Blur::uniform(1.0)), visible: true }];
+    doc.get_mut(root).unwrap().effects =
+        vec![designbox_doc::Effect { kind: EffectKind::LayerBlur(designbox_doc::Blur::uniform(1.0)), visible: true }];
     assert!(matches!(try_export_svg(&doc, &[root], &SvgOptions::default()), Err(SvgError::Depth(_))));
 }

@@ -1,8 +1,8 @@
 //! The style picker: name folders, new style names, and the popover drawn headless (list, grid,
 //! editor), committing a typed name when it closes.
 
-use egui::{Id, Pos2, RawInput, Rect, vec2};
 use designbox_engine::Session;
+use egui::{Id, Pos2, RawInput, Rect, vec2};
 use serde_json::json;
 
 use super::*;

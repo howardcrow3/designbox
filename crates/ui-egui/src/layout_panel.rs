@@ -4,8 +4,8 @@
 //! alignment in its cell, and clip content. Everything goes through `node.set` props or `layout.*`
 //! commands.
 
-use egui::{Align2, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_doc::*;
+use egui::{Align2, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;

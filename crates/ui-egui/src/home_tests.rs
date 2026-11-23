@@ -3,11 +3,11 @@
 //! frames once they are in), the first-run row (only without recent files) and the Getting
 //! started card (closed, kept closed, and brought back from the Help menu).
 
-use egui::accesskit::Role;
-use egui::{Event, Key, Modifiers, PointerButton, Pos2, Rect, Shape};
 use designbox_engine::Session;
 use designbox_engine::online::OnlineFile;
 use designbox_engine::templates::TEMPLATES;
+use egui::accesskit::Role;
+use egui::{Event, Key, Modifiers, PointerButton, Pos2, Rect, Shape};
 use serde_json::json;
 
 use crate::home::{Section, cached_thumbnails};

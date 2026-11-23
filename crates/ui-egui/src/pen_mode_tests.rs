@@ -2,10 +2,10 @@
 //! to Move, and the canvas of Prototype or Inspect takes no more pen points. Driven by the panel
 //! keys and by the toolbar's mode switcher.
 
-use egui::accesskit::Role;
-use egui::{Event, Key, Modifiers, Pos2, pos2};
 use designbox_engine::Session;
 use designbox_engine::tools::ToolId;
+use egui::accesskit::Role;
+use egui::{Event, Key, Modifiers, Pos2, pos2};
 use serde_json::json;
 
 use crate::RightTab;

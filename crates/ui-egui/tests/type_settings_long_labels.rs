@@ -4,9 +4,9 @@
 //! test binary, since the UI language is one setting for the whole process.
 #![allow(clippy::unwrap_used)]
 
-use egui::{Id, Popup, Pos2, RawInput, Rect, vec2};
 use designbox_engine::Session;
 use designbox_ui_egui::{FigApp, NoServices};
+use egui::{Id, Popup, Pos2, RawInput, Rect, vec2};
 use serde_json::json;
 
 /// The Type settings popover's width over the frames it is open, the UI in `language`.

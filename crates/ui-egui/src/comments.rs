@@ -4,11 +4,11 @@
 //! in place of the Design panel while the Comment tool is active (search, filter, sort, keyboard
 //! navigation) and pins on a presented frame. Every change goes through a `comment.*` command.
 
-use egui::text::{CCursor, CCursorRange, LayoutJob, TextFormat};
-use egui::{Align2, Color32, CornerRadius, Id, Key, Modifiers, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
 use designbox_doc::{Comment, Message, NodeId, mention_ranges};
 use designbox_engine::ToolId;
 use designbox_engine::cmd::comment::{self as cc, Filter, Query, Sort};
+use egui::text::{CCursor, CCursorRange, LayoutJob, TextFormat};
+use egui::{Align2, Color32, CornerRadius, Id, Key, Modifiers, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

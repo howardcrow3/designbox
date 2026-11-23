@@ -5,9 +5,9 @@
 //! The test window's size is fixed in points, so it grows with the zoom here; the limit for a small
 //! window is tested on its own in `ui_scale::tests`, and the sizes below stay inside it.
 
+use designbox_engine::Session;
 use egui::accesskit::Role;
 use egui::{RawInput, ViewportId, ViewportInfo};
-use designbox_engine::Session;
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

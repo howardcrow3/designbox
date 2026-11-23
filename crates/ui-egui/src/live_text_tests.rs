@@ -2,10 +2,10 @@
 //! glyphs of the text, their name above it, the note when you type in the same layer, what
 //! `collab.peers` reports, and no frames while nothing moves.
 
-use egui::{Color32, Pos2, Shape};
 use designbox_doc::NodeId;
 use designbox_engine::designbox_collab::EditingText;
 use designbox_engine::live::{Event as LiveEvent, Presence, editing_hint};
+use egui::{Color32, Pos2, Shape};
 use serde_json::json;
 
 use crate::canvas::TextOnScreen;

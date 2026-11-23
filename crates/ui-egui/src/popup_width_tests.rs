@@ -1,8 +1,8 @@
 //! Popup menus are as wide as their widest row (at least as wide as what opened them), not egui's
 //! default area width, and stay inside the window: drawn headless.
 
-use egui::{Color32, Event, Order, PointerButton, Pos2, RawInput, Rect, pos2, vec2};
 use designbox_engine::Session;
+use egui::{Color32, Event, Order, PointerButton, Pos2, RawInput, Rect, pos2, vec2};
 
 use crate::right::{menu_item, menu_popup, menu_row_width};
 use crate::theme::regular;

@@ -1,9 +1,9 @@
 //! The toolbar's Resources button and Shift+I open the Assets panel (#710), from a collapsed
 //! sidebar and from the version history too.
 
+use designbox_engine::Session;
 use egui::accesskit::Role;
 use egui::{Event, Key, Modifiers, Pos2, pos2};
-use designbox_engine::Session;
 
 use crate::LeftTab;
 use crate::layers_drag_tests::Ui;

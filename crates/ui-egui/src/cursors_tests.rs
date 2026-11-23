@@ -3,10 +3,10 @@
 //! each tool, while panning or zooming, over a ruler guide, and over a layers row that takes no
 //! drop.
 
-use egui::{CursorIcon, Event, Key, Modifiers, Pos2, pos2};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
 use designbox_engine::tools::{Cursor, PenCursor, ToolId};
+use egui::{CursorIcon, Event, Key, Modifiers, Pos2, pos2};
 use serde_json::json;
 
 use crate::cursors::{Glyph, Shown, of, on_canvas, resize_icon};

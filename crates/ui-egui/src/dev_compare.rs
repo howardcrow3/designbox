@@ -6,9 +6,9 @@
 
 use std::sync::Arc;
 
-use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_doc::{DevStatus, Document, NodeId};
 use designbox_engine::devcompare::{self, ChangeKind, Comparison, LayerChange};
+use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;

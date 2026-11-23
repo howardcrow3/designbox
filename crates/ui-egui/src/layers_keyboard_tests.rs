@@ -3,9 +3,9 @@
 //! opens the context menu at the focused row or below the canvas selection and the menu takes the
 //! keyboard, and F8 draws a selection box the arrows move and size and Enter selects with.
 
-use egui::{Event, Key, Modifiers};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
+use egui::{Event, Key, Modifiers};
 use serde_json::json;
 
 use crate::a11y::{Region, focused_name};

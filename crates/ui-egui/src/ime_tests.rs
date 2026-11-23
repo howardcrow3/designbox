@@ -3,9 +3,9 @@
 //! edit (an idle frame too) with the candidate window at the caret, the composition shows without
 //! entering the document, keys pressed while composing are the IME's, and the commit lands once.
 
-use egui::{Event, ImeEvent, Key, Modifiers, RawInput, Rect};
 use designbox_doc::{NodeId, NodeKind};
 use designbox_engine::Session;
+use egui::{Event, ImeEvent, Key, Modifiers, RawInput, Rect};
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

@@ -2,10 +2,10 @@
 //! from `dev.compare {show}`, switches to the overlay and closes with Escape before the focus view
 //! does; the focus view's Escape; the annotation filter; the playground's instance-swap menu.
 
-use egui::accesskit::{Node, Role};
-use egui::{Event, Key, MouseWheelUnit, Pos2, TouchPhase, pos2, vec2};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
+use egui::accesskit::{Node, Role};
+use egui::{Event, Key, MouseWheelUnit, Pos2, TouchPhase, pos2, vec2};
 use serde_json::json;
 
 use crate::dev_compare::Mode;

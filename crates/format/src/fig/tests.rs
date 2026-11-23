@@ -1141,7 +1141,9 @@ fn nested_instances_resized_again_drop_the_layout_derived_for_their_old_size() {
     assert_eq!(width("Wide slider"), (250.0, 250.0));
     // What else the derived data gives (the colour a variable resolves to, say) still holds.
     let fill = doc.node(doc.node(named(&doc, "Wide slider").children[0]).unwrap().children[0]).unwrap();
-    assert!(matches!(fill.fills.first().map(|p| &p.kind), Some(designbox_doc::color::PaintKind::Solid { color }) if color.r == 1.0 && color.g == 0.0));
+    assert!(
+        matches!(fill.fills.first().map(|p| &p.kind), Some(designbox_doc::color::PaintKind::Solid { color }) if color.r == 1.0 && color.g == 0.0)
+    );
 }
 
 #[path = "tail_tests.rs"]

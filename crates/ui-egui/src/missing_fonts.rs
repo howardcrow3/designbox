@@ -2,8 +2,8 @@
 //! drawn in a fallback font. It opens by itself after the user opens a file that has any (once
 //! the installed fonts are indexed and any import report is closed), and from Text ▸ Missing fonts.
 
-use egui::RichText;
 use designbox_engine::fonts::{Missing, missing};
+use egui::RichText;
 use serde_json::{Value, json};
 
 use crate::FigApp;

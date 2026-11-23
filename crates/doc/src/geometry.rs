@@ -18,7 +18,9 @@ pub fn shape_path(n: &Node) -> Option<BezPath> {
         NodeKind::Slice => designbox_geom::rounded_rect(w, h, [0.0; 4], 0.0),
         NodeKind::Ellipse { start, sweep, inner } => designbox_geom::ellipse(w, h, *start, *sweep, *inner),
         NodeKind::Polygon { count } => designbox_geom::rounded_polygon(&designbox_geom::polygon_points(w, h, *count), c.radii[0]),
-        NodeKind::Star { count, inner_ratio } => designbox_geom::rounded_polygon(&designbox_geom::star_points(w, h, *count, *inner_ratio), c.radii[0]),
+        NodeKind::Star { count, inner_ratio } => {
+            designbox_geom::rounded_polygon(&designbox_geom::star_points(w, h, *count, *inner_ratio), c.radii[0])
+        }
         NodeKind::Line => {
             let mut p = BezPath::new();
             p.move_to((0.0, 0.0));

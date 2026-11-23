@@ -1,8 +1,8 @@
 //! Cursor chat and spotlight drawn headless: others' chat bubbles fading, your chat box (`/`,
 //! typing, Enter, Escape), the spotlight banner and your avatar's menu.
 
-use egui::{Event, Key, Modifiers, pos2};
 use designbox_engine::live::{Event as LiveEvent, Signal};
+use egui::{Event, Key, Modifiers, pos2};
 
 use crate::live_tests::{Harness, cursor, has_text, text_center, texts};
 

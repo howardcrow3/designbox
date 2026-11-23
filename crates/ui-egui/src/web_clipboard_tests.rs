@@ -3,9 +3,9 @@
 //! whatever the system clipboard has. A copy that never reached the clipboard pasted the text that
 //! was there before as a text layer instead of the copied layers.
 
-use egui::{Event, Key, Modifiers, OutputCommand, Pos2, RawInput, Rect, vec2};
 use designbox_doc::NodeKind;
 use designbox_engine::Session;
+use egui::{Event, Key, Modifiers, OutputCommand, Pos2, RawInput, Rect, vec2};
 use serde_json::json;
 
 use crate::{FigApp, Services, egui_copy_png, egui_copy_text};

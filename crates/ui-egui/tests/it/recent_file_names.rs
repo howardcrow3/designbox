@@ -1,8 +1,8 @@
 //! Recent file rows keep their full accessible name.
 
-use egui::{Context, Id, Pos2, RawInput, Rect, accesskit::Role, vec2};
 use designbox_engine::Session;
 use designbox_ui_egui::{FigApp, NoServices};
+use egui::{Context, Id, Pos2, RawInput, Rect, accesskit::Role, vec2};
 
 /// Render the home screen in `view` with `path` (and a single-space control) as recents and return
 /// the row's (label, shortcut, focused name).

@@ -1,10 +1,10 @@
 //! The Design panel's Arc fields (named, valued, Mixed across ellipses, typed into), the width
 //! point's side fields, and operands with an operation of their own in the layers panel.
 
-use egui::accesskit::{Node, Role};
-use egui::{Event, Key, Modifiers};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
+use egui::accesskit::{Node, Role};
+use egui::{Event, Key, Modifiers};
 use serde_json::json;
 
 use crate::icons::Icon;

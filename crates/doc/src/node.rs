@@ -743,7 +743,11 @@ impl Node {
             EffectKind::DropShadow(s) => {
                 let g = s.radius.abs() * 1.5 + s.spread.max(0.0) + miter;
                 let (dx, dy) = s.offset;
-                if g.is_finite() && dx.is_finite() && dy.is_finite() { r.union(b.inflate(g, g) + designbox_geom::kurbo::Vec2::new(dx, dy)) } else { r }
+                if g.is_finite() && dx.is_finite() && dy.is_finite() {
+                    r.union(b.inflate(g, g) + designbox_geom::kurbo::Vec2::new(dx, dy))
+                } else {
+                    r
+                }
             }
             _ => {
                 let g = e.reach();

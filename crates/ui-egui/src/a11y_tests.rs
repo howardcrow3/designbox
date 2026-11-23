@@ -4,10 +4,10 @@
 //! a menu opened from the keyboard takes it and Escape gives it back, Escape returns to the
 //! canvas where shortcuts work again, and a pointer press ends keyboard mode.
 
-use egui::accesskit::{Node, Role, Toggled};
-use egui::{Event, Key, Modifiers};
 use designbox_doc::NodeId;
 use designbox_engine::{Session, ToolId};
+use egui::accesskit::{Node, Role, Toggled};
+use egui::{Event, Key, Modifiers};
 use serde_json::json;
 
 use crate::a11y::{Region, focused_name};

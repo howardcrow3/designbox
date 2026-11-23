@@ -2,13 +2,13 @@
 //! behaviour, overlay settings and prototype settings. Every edit runs a `proto.*` command or
 //! `node.set`.
 
-use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Sense, Shape, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_color::Paint;
 use designbox_doc::proto::{
     Action, ConditionalBlock, Direction, Easing, GAMEPAD_BUTTONS, Interaction, KeyMods, Overflow, OverlayPosition, ScrollPosition, Transition,
     Trigger, is_gamepad_button,
 };
 use designbox_doc::*;
+use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Sense, Shape, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

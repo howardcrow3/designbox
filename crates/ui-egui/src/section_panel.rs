@@ -1,8 +1,8 @@
 //! Design panel extras for frames and sections: section colours, hiding a section's contents,
 //! handoff status (with resolving a change to a ready-for-dev layer) and resize to fit.
 
-use egui::{CornerRadius, Sense, Stroke, Ui, vec2};
 use designbox_doc::{DevStatus, Document, NodeId, NodeKind};
+use egui::{CornerRadius, Sense, Stroke, Ui, vec2};
 use serde_json::json;
 
 use crate::FigApp;

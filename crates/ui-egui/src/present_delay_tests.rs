@@ -1,10 +1,10 @@
 //! Delays on mouse enter, leave, down and up triggers, and manual overlay positions, in the
 //! player: gestures go through egui headless on the harness's clock (a frame is 1/60 s).
 
-use egui::{Event, Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use designbox_doc::NodeId;
 use designbox_doc::proto::OverlayPosition;
 use designbox_engine::Session;
+use egui::{Event, Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use serde_json::{Value, json};
 
 use super::overlay_rect;

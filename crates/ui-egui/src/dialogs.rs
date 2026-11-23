@@ -3,10 +3,10 @@
 
 use std::path::Path;
 
-use egui::{Align2, Context, CornerRadius, RichText, Sense, Stroke, vec2};
 use designbox_color::ColorProfile;
 use designbox_doc::{ExportFormat, ExportSetting, ExportSize, NodeId};
 use designbox_engine::cmd::file::{export_jobs, exportable_layers};
+use egui::{Align2, Context, CornerRadius, RichText, Sense, Stroke, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;
@@ -129,15 +129,11 @@ fn about_body(ui: &mut egui::Ui, t: &Tokens) {
         });
     });
     ui.add_space(12.0);
-    ui.label(tr(
-        "Interface design and prototyping. A free, open-source, clean-room design tool written from scratch in Rust.",
-    ));
+    ui.label(tr("Interface design and prototyping. A free, open-source, clean-room design tool written from scratch in Rust."));
     ui.add_space(8.0);
     ui.hyperlink_to("turtlebox.studio/apps/designbox", "https://turtlebox.studio/apps/designbox");
     ui.add_space(8.0);
-    ui.label(
-        RichText::new(tr("Dual-licensed MIT OR Apache-2.0.")).color(t.text_secondary).font(regular(11.0)),
-    );
+    ui.label(RichText::new(tr("Dual-licensed MIT OR Apache-2.0.")).color(t.text_secondary).font(regular(11.0)));
 }
 
 /// Escape closes the topmost simple dialog (one without menus of its own), before the canvas's

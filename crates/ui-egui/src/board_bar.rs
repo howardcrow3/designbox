@@ -2,9 +2,9 @@
 //! connector style; boards hide the Design panel until asked for), and the swatches it and the
 //! board tools' flyouts share.
 
-use egui::{Color32, CornerRadius, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_doc::{BOARD_COLORS, BoardItem, BoardShape, NodeKind, Routing, Stamp, StrokeCap};
 use designbox_engine::board::{BoardTool, TEXT_SIZES};
+use egui::{Color32, CornerRadius, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

@@ -1,8 +1,8 @@
 //! The main menu (from the engine's menu catalog), the canvas/layer context menu and the
 //! Actions palette (⌘K / ⌘/).
 
-use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_engine::catalog::{MENU, SEP};
+use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;

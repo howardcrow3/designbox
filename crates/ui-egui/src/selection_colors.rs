@@ -3,10 +3,10 @@
 
 use std::sync::Arc;
 
-use egui::{Id, Ui};
 use designbox_color::Color;
 use designbox_doc::{Document, NodeId, StyleKind};
 use designbox_engine::selection_colors::{PaintTarget, SelectionColor, collect};
+use egui::{Id, Ui};
 use serde_json::json;
 
 use crate::a11y::Tip;
@@ -140,8 +140,8 @@ pub fn section(app: &mut FigApp, ui: &mut Ui, doc: &Arc<Document>, ids: &[NodeId
 mod tests {
     use super::*;
     use crate::NoServices;
-    use egui::{Event, Pos2, RawInput, Rect, Shape, vec2};
     use designbox_engine::Session;
+    use egui::{Event, Pos2, RawInput, Rect, Shape, vec2};
 
     struct Panel {
         ctx: egui::Context,

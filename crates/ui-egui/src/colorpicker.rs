@@ -1,11 +1,11 @@
 //! The colour picker popover: paint type, saturation/brightness square, hue and alpha sliders,
 //! hex and RGB fields, gradient stops, image and pattern fills and document colours.
 
-use egui::{Align2, Color32, CornerRadius, Id, Mesh, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_color::{
     Color, ColorStop, Gradient, GradientKind, Hsb, ImageFilters, ImageScaleMode, Paint, PaintKind, PatternAlign, PatternPaint, PatternTile,
 };
 use designbox_doc::{NodeId, NodeKind};
+use egui::{Align2, Color32, CornerRadius, Id, Mesh, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;

@@ -2,8 +2,8 @@
 //! reaching the canvas), opening the app with an invite link, and the browser's Share popover
 //! (it joins but can't host).
 
-use egui::{Event, Key};
 use designbox_engine::live::{Event as LiveEvent, HostOptions, LiveLink, Presence, SessionInfo, Status};
+use egui::{Event, Key};
 use serde_json::json;
 
 use crate::live_tests::{Harness, has_text, text_center};

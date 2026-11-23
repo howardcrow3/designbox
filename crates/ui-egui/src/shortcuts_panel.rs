@@ -2,8 +2,8 @@
 //! keymap (Essential, Tools, View…), each command's keys as keycaps for this platform, and a search
 //! across every group.
 
-use egui::{Align2, Context, CornerRadius, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_engine::keymap::{GESTURES, Group, KEYS, Platform};
+use egui::{Align2, Context, CornerRadius, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 
 use crate::FigApp;
 use crate::i18n::{self, tr};

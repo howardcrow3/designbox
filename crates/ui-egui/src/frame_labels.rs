@@ -4,10 +4,10 @@
 //! length. Each label's area goes to the engine (`ToolState::labels`), so pressing a label selects
 //! and drags its frame like pressing the frame itself.
 
-use egui::layers::ShapeIdx;
-use egui::{Align2, Color32, CornerRadius, Painter, Pos2, Rect, Shape, Vec2, emath::Rot2, pos2, vec2};
 use designbox_doc::{Document, NodeId, NodeKind};
 use designbox_geom::Point;
+use egui::layers::ShapeIdx;
+use egui::{Align2, Color32, CornerRadius, Painter, Pos2, Rect, Shape, Vec2, emath::Rot2, pos2, vec2};
 
 use crate::FigApp;
 use crate::canvas::status_badge;

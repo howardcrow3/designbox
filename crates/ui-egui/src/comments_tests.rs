@@ -3,8 +3,8 @@
 //! arrows step through threads, `@` offers names, Escape closes, the presenter shows the presented
 //! frame's comments; and the helpers on their own.
 
-use egui::{Event, Key, Modifiers, Pos2, pos2, vec2};
 use designbox_engine::Session;
+use egui::{Event, Key, Modifiers, Pos2, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::comments::{cluster, insert_mention, mention_matches, mention_query, start_draft};

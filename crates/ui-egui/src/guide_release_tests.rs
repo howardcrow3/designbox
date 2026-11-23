@@ -1,8 +1,8 @@
 //! Ruler guide drags released off the canvas, driven through egui headless: the gesture ends there,
 //! and a later click on the canvas neither adds a guide nor moves one.
 
-use egui::{Event, Pos2, vec2};
 use designbox_engine::Session;
+use egui::{Event, Pos2, vec2};
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

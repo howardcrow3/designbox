@@ -11,9 +11,9 @@ use std::collections::HashMap;
 use std::path::Path;
 
 use chrono::Datelike;
-use egui::{Align2, Color32, CornerRadius, Id, Key, Rect, Response, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_engine::Prefs;
 use designbox_format::thumbnail::{FileKind, Preview};
+use egui::{Align2, Color32, CornerRadius, Id, Key, Rect, Response, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

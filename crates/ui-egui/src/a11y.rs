@@ -18,9 +18,9 @@
 //! context again (a nested call deadlocks; debug builds panic after 10 s): read what they need
 //! first, as everything here does (`a11y_tests` runs every path with the tree on).
 
+use designbox_engine::keymap;
 use egui::accesskit::{self, Role, Toggled};
 use egui::{Context, CornerRadius, Event, FocusDirection, Id, Key, LayerId, Modifiers, Order, Pos2, Rect, Response, Stroke, StrokeKind, Ui};
-use designbox_engine::keymap;
 
 use crate::FigApp;
 use crate::i18n::tr;

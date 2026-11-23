@@ -3,8 +3,8 @@
 //! hidden (a rotate cursor turned to its corner, the pen's states, the eyedropper, the comment
 //! pin). The glyphs are original, drawn from lines and the code-drawn icons: no cursor images.
 
-use egui::{Color32, CursorIcon, Painter, Pos2, Shape, Stroke, pos2, vec2};
 use designbox_engine::tools::{Cursor, PenCursor};
+use egui::{Color32, CursorIcon, Painter, Pos2, Shape, Stroke, pos2, vec2};
 
 use crate::icons::{self, Icon};
 

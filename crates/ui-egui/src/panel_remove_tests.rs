@@ -2,9 +2,9 @@
 //! adding a paint opens its colour picker; an open colour picker and open settings stay with their items,
 //! and go when their item goes.
 
-use egui::{Event, Id, Pos2};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
+use egui::{Event, Id, Pos2};
 use serde_json::json;
 
 use crate::colorpicker::PickerTarget;

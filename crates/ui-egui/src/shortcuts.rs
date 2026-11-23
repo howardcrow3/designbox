@@ -4,8 +4,8 @@
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU8, Ordering};
 
-use egui::{Context, Event, Key, Modifiers};
 use designbox_engine::keymap::{self, Platform};
+use egui::{Context, Event, Key, Modifiers};
 use serde_json::json;
 
 use crate::FigApp;

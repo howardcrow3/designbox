@@ -1,9 +1,9 @@
 //! The right panel: Design, Prototype and Inspect tabs.
 
-use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Sense, Stroke, Ui, pos2, vec2};
 use designbox_color::{BlendMode, Paint, PaintKind};
 use designbox_doc::*;
 use designbox_engine::cmd::lists::{moved_index, removed_index};
+use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Sense, Stroke, Ui, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::a11y::{self, Tip};

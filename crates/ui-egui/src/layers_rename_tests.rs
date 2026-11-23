@@ -2,9 +2,9 @@
 //! starts it, Tab / Shift+Tab commit and go on to the next / previous row (the selection follows),
 //! Enter commits and Escape cancels.
 
-use egui::{Event, Key, Modifiers};
 use designbox_doc::NodeId;
 use designbox_engine::Session;
+use egui::{Event, Key, Modifiers};
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

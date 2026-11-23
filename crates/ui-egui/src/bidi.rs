@@ -10,9 +10,9 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use designbox_text::display::{self, VisualLine};
 use egui::text::{ByteIndex, CCursor, CCursorRange, LayoutJob, LayoutSection, TextFormat, TextWrapping};
 use egui::{Color32, FontId, Galley, Id, Painter, Pos2, Rect, Response, Stroke, Ui, pos2, vec2};
-use designbox_text::display::{self, VisualLine};
 
 /// Shown (visual, elided) lines by name, font and width: elision measures many candidates, so the
 /// result is kept between frames (cleared when it grows large).

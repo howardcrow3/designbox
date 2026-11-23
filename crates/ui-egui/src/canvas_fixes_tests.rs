@@ -6,8 +6,8 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{Duration, Instant};
 
-use egui::{Pos2, Shape};
 use designbox_engine::Session;
+use egui::{Pos2, Shape};
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;

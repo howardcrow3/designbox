@@ -2,8 +2,8 @@
 //! the title bar: its empty space drags the window (double-click maximises), and it carries the
 //! window buttons; the window's edges resize it.
 
-use egui::{Align2, Color32, CornerRadius, Rect, Sense, Stroke, Ui, pos2, vec2};
 use designbox_doc::NodeId;
+use egui::{Align2, Color32, CornerRadius, Rect, Sense, Stroke, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::a11y::Tip;

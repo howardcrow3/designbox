@@ -4,10 +4,10 @@
 //! auto layout padding/gap handles (item gaps, wrapped row gaps, grid column
 //! and row gaps, with the grid's tracks outlined).
 
-use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Shape, Stroke, StrokeKind, pos2, vec2};
 use designbox_color::{ImagePaint, ImageScaleMode, Paint, PaintKind};
 use designbox_doc::{Blur, ContentAlign, Effect, LayoutMode, NodeId};
 use designbox_geom::Point;
+use egui::{Align2, Color32, CornerRadius, Id, Pos2, Rect, Shape, Stroke, StrokeKind, pos2, vec2};
 use serde_json::json;
 
 use crate::colorpicker::PickerTarget;

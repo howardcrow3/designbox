@@ -3,10 +3,10 @@
 //! the canvas and while editing text, text formatting keys while editing, and the hold-Z zoom tool.
 //! Modifiers are Cmd/Alt/Shift only, which mean the same on every platform.
 
-use egui::{Event, Key, Modifiers, pos2};
 use designbox_doc::{NodeId, TextDecoration};
 use designbox_engine::Session;
 use designbox_engine::keymap::KEYS;
+use egui::{Event, Key, Modifiers, pos2};
 use serde_json::json;
 
 use crate::RightTab;

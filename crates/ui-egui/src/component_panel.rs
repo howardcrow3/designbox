@@ -10,13 +10,13 @@
 //! - A slot inside an instance (and an instance's slot properties): fill it with components
 //!   (preferred ones first), select it, reset it to the main's default content.
 
-use egui::{Id, Sense, Ui, vec2};
 use designbox_doc::*;
 use designbox_engine::cmd::component::{can_add_variant, can_combine_variants};
 use designbox_engine::components::{
     PROP_BINDING, default_variant, inside_instance, owning_component, owning_instance, slot_def, slot_edited, slots_of, variant_conflicts,
     variant_options, variant_props, variant_set,
 };
+use egui::{Id, Sense, Ui, vec2};
 use serde_json::{Value, json};
 
 use crate::FigApp;

@@ -1,10 +1,10 @@
 //! The interaction editor's conditionals and the presenter's hotspot hints, driven headless
 //! through egui (the harness is `present_tests`').
 
-use egui::{Pos2, Rect, pos2};
 use designbox_doc::proto::{Action, Expr, ExprOp};
 use designbox_doc::{NodeId, VariableValue};
 use designbox_engine::Session;
+use egui::{Pos2, Rect, pos2};
 use serde_json::{Value, json};
 
 use crate::present_tests::{Ui, id};

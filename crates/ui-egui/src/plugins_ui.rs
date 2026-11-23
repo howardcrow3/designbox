@@ -4,9 +4,9 @@
 //! browse, install from and update from). Everything runs through the engine's `plugin.*`,
 //! `plugin.directory.*` and `widget.*` commands.
 
-use egui::{Align2, Context, Id, RichText, Ui};
 use designbox_engine::plugin_directory::{PluginEntry, installed_version, newer_version};
 use designbox_engine::plugins::{Access, InstalledPlugin, Param, ParamKind};
+use egui::{Align2, Context, Id, RichText, Ui};
 use serde_json::{Map, Value, json};
 
 use crate::FigApp;

@@ -1,8 +1,8 @@
 //! The floating bottom toolbar (UI3): tool groups with flyouts, comments, actions.
 
-use egui::{Align2, Color32, CornerRadius, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_engine::ToolId;
 use designbox_engine::vectoredit::VTool;
+use egui::{Align2, Color32, CornerRadius, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;

@@ -84,7 +84,12 @@ impl Args {
                 .filter(|b| *b <= designbox_doc::PrintSettings::MAX_BLEED)
                 .ok_or_else(|| CliError::Usage(format!("--bleed takes points or a length like 3mm or 0.125in (up to 2in), got `{s}`")))?,
         };
-        Ok(designbox_doc::PrintSettings { bleed, crop_marks: self.flag("crop-marks"), bleed_marks: self.flag("bleed-marks"), cmyk: self.flag("cmyk") })
+        Ok(designbox_doc::PrintSettings {
+            bleed,
+            crop_marks: self.flag("crop-marks"),
+            bleed_marks: self.flag("bleed-marks"),
+            cmyk: self.flag("cmyk"),
+        })
     }
 
     pub fn scale(&self) -> CliResult<f64> {

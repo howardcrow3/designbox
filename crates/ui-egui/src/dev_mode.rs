@@ -5,7 +5,6 @@
 //! focus view's bar, Connect to code (a component's link to its code component), dev resources
 //! (links for developers) and the plugins that only read the document.
 
-use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use designbox_doc::{Annotation, AnnotationCategory, CodeLink, DevStatus, Document, NodeId};
 use designbox_engine::annotations::{self, PINNABLE, Pinnable};
 use designbox_engine::code_connect;
@@ -13,6 +12,7 @@ use designbox_engine::codegen::{CodeLang, code_for};
 use designbox_engine::devinspect::{self, DevItem, Prop};
 use designbox_engine::plugins::Access;
 use designbox_engine::{components, dev_resources};
+use egui::{Align2, Color32, CornerRadius, Id, Rect, Sense, Stroke, StrokeKind, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::a11y::Tip;

@@ -215,8 +215,8 @@ fn bundle_from_disk(cmd: &str, path: &str) -> Result<Bundle> {
     if crate::file_access::is_dir(&file) {
         file.push(MANIFEST_FILE);
     }
-    let text =
-        String::from_utf8(read_file(&file, designbox_plugin::manifest::MAX_MANIFEST_BYTES)?).map_err(|_| bad(cmd, "the manifest isn't UTF-8 text"))?;
+    let text = String::from_utf8(read_file(&file, designbox_plugin::manifest::MAX_MANIFEST_BYTES)?)
+        .map_err(|_| bad(cmd, "the manifest isn't UTF-8 text"))?;
     let m = Manifest::parse(&text).map_err(|e| bad(cmd, e))?;
     let wasm = module_file(&file, &m)?;
     let mut assets = Vec::new();

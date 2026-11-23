@@ -4,8 +4,8 @@
 //! (read-only, with a banner to restore it or go back); clicking Current version goes back. Above
 //! the history, the file's branches: create one, open one, review and merge, archive.
 
-use egui::{Align2, CornerRadius, Id, Rect, Sense, Stroke, Ui, pos2, vec2};
 use designbox_engine::branches::BranchState;
+use egui::{Align2, CornerRadius, Id, Rect, Sense, Stroke, Ui, pos2, vec2};
 use serde_json::json;
 
 use crate::FigApp;
