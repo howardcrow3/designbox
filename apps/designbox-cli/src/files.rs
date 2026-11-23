@@ -491,7 +491,7 @@ mod tests {
         )
         .unwrap();
         let out = dir.join("out.designbox");
-        run_script(script.to_str().unwrap(), None, Some(out.to_str().unwrap())).unwrap();
+        assert_eq!(run_script(script.to_str().unwrap(), None, Some(out.to_str().unwrap())).unwrap(), ExitCode::SUCCESS);
 
         let mut s = Session::empty();
         s.execute("file.open", &json!({"path": out.to_str().unwrap()})).unwrap();
@@ -521,7 +521,7 @@ mod tests {
         .unwrap();
         let out = dir.join("out.designbox");
         // The failure is the script's, not the call's: the CLI reports it and exits non-zero.
-        run_script(script.to_str().unwrap(), None, Some(out.to_str().unwrap())).unwrap();
+        assert_eq!(run_script(script.to_str().unwrap(), None, Some(out.to_str().unwrap())).unwrap(), ExitCode::from(1));
         assert!(!out.exists(), "a script that failed writes nothing");
         std::fs::remove_dir_all(dir).unwrap();
     }
